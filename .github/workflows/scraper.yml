@@ -1,0 +1,69 @@
+# ─────────────────────────────────────────────────────────────
+# GameFree — Workflow de automatización del scraper
+# ─────────────────────────────────────────────────────────────
+# Qué hace este archivo:
+#   1. Se activa automáticamente cada 12 horas (cron)
+#   2. También se puede disparar manualmente desde GitHub UI
+#   3. Instala Node.js y dependencias
+#   4. Inyecta los Secrets de GitHub como variables de entorno
+#   5. Ejecuta scraper.js que extrae juegos y los guarda en Supabase
+#
+# Los servidores de GitHub corren el job, tu máquina no necesita
+# estar encendida. Costo: $0 (dentro del free tier de Actions).
+# ─────────────────────────────────────────────────────────────
+
+name: GameFree Scraper
+
+on:
+  # ── Trigger automático (cron) ─────────────────────────────
+  # Sintaxis: minuto hora día mes día_semana (UTC)
+  # "0 */12 * * *" = al minuto 0, cada 12 horas → 00:00 y 12:00 UTC
+  schedule:
+    - cron: "0 */12 * * *"
+
+  # ── Trigger manual desde GitHub UI ───────────────────────
+  # Útil para probar el workflow sin esperar al cron,
+  # o para forzar una actualización inmediata de la BD.
+  workflow_dispatch:
+
+jobs:
+  scrape-and-save:
+    # Sistema operativo del runner (servidor de GitHub)
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── PASO 1: Obtener el código del repositorio ─────────
+      # actions/checkout clona tu repo en el runner.
+      # Sin este paso, el runner no tiene acceso a scraper.js.
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      # ── PASO 2: Instalar Node.js ──────────────────────────
+      # Especificamos la versión LTS (22.x) para garantizar
+      # que fetch() nativo esté disponible (requiere Node 18+).
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+          # Cache de dependencias: si package.json no cambió,
+          # Actions reutiliza node_modules del run anterior.
+          # Acelera el workflow de ~30s a ~5s.
+          cache: "npm"
+
+      # ── PASO 3: Instalar dependencias ────────────────────
+      # `npm ci` es la versión de CI de `npm install`:
+      # - Más rápido (usa package-lock.json directamente)
+      # - Falla si hay diferencias entre package.json y lockfile
+      # - No modifica el lockfile (reproducible y seguro)
+      - name: Instalar dependencias
+        run: npm ci
+
+      # ── PASO 4: Ejecutar el scraper ───────────────────────
+      # Los Secrets de GitHub se inyectan como variables de
+      # entorno del proceso. scraper.js los lee con process.env.
+      # NUNCA aparecen en los logs del workflow (GitHub los enmascara).
+      - name: Ejecutar scraper
+        run: node scraper.js
+        env:
+          SUPABASE_URL:      ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
