@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: #0d1117;
+    color: #e6edf3;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #161b22;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #30363d;
+    border-radius: 3px;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    background-color: #3b82f6;
+    color: #fff;
+    font-weight: 600;
+    padding: 0.375rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    transition: background-color 0.2s, opacity 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+  .btn-primary:hover {
+    background-color: #60a5fa;
+  }
+
+  .btn-outline {
+    background-color: transparent;
+    border: 1px solid #f59e0b;
+    color: #fbbf24;
+    font-weight: 600;
+    padding: 0.375rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    transition: background-color 0.2s, color 0.2s;
+    cursor: pointer;
+  }
+  .btn-outline:hover {
+    background-color: #f59e0b;
+    color: #000;
+  }
+
+  .card-dark {
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+
+  .nav-link {
+    color: #8b949e;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: color 0.15s;
+    cursor: pointer;
+    padding-bottom: 0.25rem;
+    text-decoration: none;
+  }
+  .nav-link:hover {
+    color: #fff;
+  }
+
+  .nav-link-active {
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-bottom: 2px solid #3b82f6;
+    padding-bottom: 0.25rem;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .store-badge-epic {
+    background-color: #1a1a2e;
+    color: #fff;
+    border: 1px solid #3d3d5c;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .store-badge-steam {
+    background-color: #1b2838;
+    color: #c6d4df;
+    border: 1px solid #2a475e;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .store-badge-gog {
+    background-color: #2a1f3d;
+    color: #d8b4fe;
+    border: 1px solid #6b21a8;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .store-badge-default {
+    background-color: #21262d;
+    color: #8b949e;
+    border: 1px solid #30363d;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+}

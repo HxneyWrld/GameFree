@@ -62,7 +62,7 @@ jobs:
       # Los Secrets de GitHub se inyectan como variables de
       # entorno del proceso. scraper.js los lee con process.env.
       # NUNCA aparecen en los logs del workflow (GitHub los enmascara).
-      - name: Ejecutar scraper
+      - name: GameFree Scraper (Multisource)
         run: node scraper.js
         env:
           SUPABASE_URL:      ${{ secrets.SUPABASE_URL }}
