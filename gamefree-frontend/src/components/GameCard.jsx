@@ -1,41 +1,29 @@
 import { useState } from "react";
-import { Heart, ExternalLink, Check, Gamepad2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { Heart } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
-/* ── Colores por tienda ─────────────────────────────────── */
-const STORE_CONFIG = {
-  "Epic Games":      { bg: "#1a1a2e", border: "#3d3d5c", color: "#c8d6e5", dot: "#00d084" },
-  "Steam":           { bg: "#1b2838", border: "#2a475e", color: "#c6d4df", dot: "#1b90ff" },
-  "GOG":             { bg: "#2a1f3d", border: "#6b21a8", color: "#d8b4fe", dot: "#a855f7" },
-  "itch.io":         { bg: "#1f0a0a", border: "#7f1d1d", color: "#fca5a5", dot: "#ef4444" },
-  "Prime Gaming":    { bg: "#1a1508", border: "#78350f", color: "#fcd34d", dot: "#f59e0b" },
-  "Humble Bundle":   { bg: "#1a0f08", border: "#7c2d12", color: "#fdba74", dot: "#f97316" },
-  "IndieGala":       { bg: "#0a1a1a", border: "#134e4a", color: "#5eead4", dot: "#14b8a6" },
-  "Fanatical":       { bg: "#1a0a1a", border: "#701a75", color: "#f0abfc", dot: "#d946ef" },
-  "Ubisoft Connect": { bg: "#081828", border: "#1e3a5f", color: "#93c5fd", dot: "#3b82f6" },
-  "Battle.net":      { bg: "#081828", border: "#164e63", color: "#67e8f9", dot: "#06b6d4" },
+const STORE_STYLES = {
+  "Epic Games": "bg-emerald-500 text-white",
+  "Steam": "bg-blue-900 text-white",
+  "GOG": "bg-purple-600 text-white",
+  "itch.io": "bg-rose-600 text-white",
+  "Prime Gaming": "bg-orange-500 text-white",
+  "Humble Bundle": "bg-rose-600 text-white",
+  "IndieGala": "bg-teal-500 text-white",
+  "Fanatical": "bg-pink-500 text-white",
+  "Ubisoft Connect": "bg-sky-500 text-white",
+  "Battle.net": "bg-cyan-500 text-white",
 };
 
-export default function GameCard({
-  game,
-  onClaimed,
-  onUnclaimed,
-  onUnfavorited,
-  initialClaimed   = false,
-  initialFavorited = false,
-}) {
+export default function GameCard({ game, onClaimed, onUnclaimed, onUnfavorited, initialClaimed = false, initialFavorited = false }) {
   const { token, isLoggedIn } = useAuth();
 
   const [claimed,   setClaimed]   = useState(initialClaimed);
   const [favorited, setFavorited] = useState(initialFavorited);
   const [loading,   setLoading]   = useState(false);
   const [removing,  setRemoving]  = useState(false);
-  const [imgError,  setImgError]  = useState(false);
-
-  const store  = STORE_CONFIG[game.store_name] ?? { bg: "#161b22", border: "#30363d", color: "#8b949e", dot: "#8b949e" };
-  const isVisible = !removing && !(claimed && !initialClaimed);
 
   async function callApi(endpoint, method) {
     const res = await fetch(`${API_URL}${endpoint}`, {
@@ -48,6 +36,7 @@ export default function GameCard({
   async function handleClaim() {
     if (!isLoggedIn || loading) return;
     setLoading(true);
+
     if (!claimed) {
       const json = await callApi(`/api/games/${game.id}/claim`, "POST");
       if (json.success || json.message === "Ya reclamado anteriormente.") {
@@ -62,14 +51,17 @@ export default function GameCard({
         setTimeout(() => onUnclaimed?.(game.id), 500);
       }
     }
+
     setLoading(false);
   }
 
   async function handleFavorite() {
     if (!isLoggedIn || loading) return;
     setLoading(true);
+
     const wasFavorited = favorited;
-    const json = await callApi(`/api/games/${game.id}/favorite`, wasFavorited ? "DELETE" : "POST");
+    const method = wasFavorited ? "DELETE" : "POST";
+    const json   = await callApi(`/api/games/${game.id}/favorite`, method);
     if (json.success) {
       setFavorited(!wasFavorited);
       if (wasFavorited) {
@@ -77,102 +69,106 @@ export default function GameCard({
         setTimeout(() => onUnfavorited?.(game.id), 500);
       }
     }
+
     setLoading(false);
   }
 
+  const badgeStyle = STORE_STYLES[game.store_name] || "bg-[#30363d] text-white";
+
   return (
-    <article
-      className="game-card"
-      style={{ opacity: isVisible ? 1 : 0, transform: isVisible ? "scale(1) translateY(0)" : "scale(0.95) translateY(8px)" }}
+    <div
+      className={`group relative flex flex-col overflow-hidden rounded-xl bg-[#161b22] border border-[#30363d] transition-all duration-300 ease-out ${
+        removing || (claimed && !initialClaimed)
+          ? "opacity-0 scale-95 pointer-events-none"
+          : "hover:-translate-y-2 hover:shadow-2xl hover:shadow-black/50 hover:border-[#8b949e]"
+      }`}
     >
-      {/* ── Imagen ──────────────────────────────────────── */}
-      <div className="game-card-img-wrap">
-        {game.thumbnail_url && !imgError ? (
+      {/* Image Container */}
+      <div className="relative aspect-[16/9] overflow-hidden bg-[#0d1117]">
+        {game.thumbnail_url ? (
           <img
             src={game.thumbnail_url}
             alt={game.title}
-            className="game-card-img"
-            onError={() => setImgError(true)}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <div className="game-card-img-fallback">
-            <Gamepad2 size={40} color="#30363d" />
-          </div>
+          <div className="w-full h-full flex items-center justify-center text-5xl">🎮</div>
         )}
-
-        {/* Badge tienda sobre la imagen */}
+        
+        {/* Store Badge */}
         <span
-          className="game-card-store-badge"
-          style={{ background: store.bg, border: `1px solid ${store.border}`, color: store.color }}
+          className={`absolute top-3 left-3 px-2.5 py-1 rounded-md text-xs font-semibold shadow-lg backdrop-blur-sm ${badgeStyle}`}
         >
-          <span className="game-card-store-dot" style={{ background: store.dot }} />
           {game.store_name}
         </span>
 
-        {/* Overlay degradado inferior */}
-        <div className="game-card-img-overlay" />
-
-        {/* Botón favorito flotante (solo logueado) */}
-        {isLoggedIn && (
-          <button
-            onClick={handleFavorite}
-            disabled={loading}
-            aria-label={favorited ? "Quitar de favoritos" : "Agregar a favoritos"}
-            className={`game-card-fav-btn ${favorited ? "game-card-fav-btn--active" : ""}`}
-          >
-            <Heart
-              size={16}
-              className={favorited ? "game-card-fav-icon--filled" : "game-card-fav-icon"}
-            />
-          </button>
-        )}
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#161b22] via-transparent to-transparent opacity-80" />
       </div>
 
-      {/* ── Contenido ───────────────────────────────────── */}
-      <div className="game-card-body">
-        {/* Título */}
-        <h3 className="game-card-title">{game.title}</h3>
+      {/* Content */}
+      <div className="flex flex-col gap-4 p-4 flex-1">
+        {/* Title */}
+        <h3 className="text-lg font-bold text-white line-clamp-2 leading-tight flex-1">
+          {game.title}
+        </h3>
 
-        {/* Precio */}
-        <div className="game-card-price-row">
+        {/* Price */}
+        <div className="flex items-center gap-3">
           {game.original_price > 0 && (
-            <span className="game-card-original-price">${game.original_price.toFixed(2)}</span>
+            <span className="text-sm text-[#8b949e] line-through">
+              ${game.original_price.toFixed(2)}
+            </span>
           )}
-          <span className="game-card-free-badge">GRATIS</span>
+          <span className="px-2 py-0.5 text-sm font-bold text-emerald-400 bg-emerald-400/10 rounded">
+            GRATIS
+          </span>
         </div>
 
-        {/* Acciones */}
-        <div className="game-card-actions">
-          {/* Reclamar → abre link externo */}
+        {/* Actions */}
+        <div className="flex items-center gap-2 pt-2 mt-auto">
           <a
             href={game.claim_url}
             target="_blank"
             rel="noreferrer"
-            className="game-card-claim-btn"
+            className="flex-1 flex items-center justify-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold py-2.5 rounded-lg transition-colors text-center"
           >
-            Reclamar
-            <ExternalLink size={14} />
+            Reclamar →
           </a>
-
-          {/* Marcar como tengo (solo logueado) */}
+          
           {isLoggedIn && (
-            <button
-              onClick={handleClaim}
-              disabled={loading}
-              aria-label={claimed ? "Marcar como no reclamado" : "Ya lo tengo"}
-              className={`game-card-have-btn ${claimed ? "game-card-have-btn--claimed" : ""}`}
-            >
-              {loading ? (
-                <span className="game-card-spinner" />
-              ) : claimed ? (
-                <><Check size={14} /> Tengo</>
-              ) : (
-                "Ya lo tengo"
-              )}
-            </button>
+            <>
+              <button
+                onClick={handleFavorite}
+                disabled={loading}
+                title={favorited ? "Quitar de favoritos" : "Agregar a favoritos"}
+                className={`flex items-center justify-center h-10 w-10 rounded-lg border transition-colors disabled:opacity-50 ${
+                  favorited
+                    ? "border-rose-500 bg-rose-500/20 hover:bg-rose-500/30 text-rose-500"
+                    : "border-[#30363d] bg-[#21262d] hover:bg-[#30363d] text-[#8b949e]"
+                }`}
+              >
+                <Heart
+                  className={`h-5 w-5 transition-colors ${favorited ? "fill-rose-500 text-rose-500" : "text-[#8b949e]"}`}
+                />
+              </button>
+
+              <button
+                onClick={handleClaim}
+                disabled={loading}
+                title={claimed ? "Marcar como no reclamado" : "Ya lo tengo"}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 border ${
+                  claimed
+                    ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-rose-500/10 hover:border-rose-500/30 hover:text-rose-400"
+                    : "border-[#30363d] text-[#8b949e] hover:bg-[#21262d]"
+                }`}
+              >
+                {loading ? "..." : claimed ? "✓" : "Tengo"}
+              </button>
+            </>
           )}
         </div>
       </div>
-    </article>
+    </div>
   );
 }
