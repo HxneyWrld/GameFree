@@ -4,9 +4,9 @@ import { X } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
-export default function AuthModal({ onClose }) {
+export default function AuthModal({ onClose, initialMode = "login", resetToken = null }) {
   const { login } = useAuth();
-  const [activeTab, setActiveTab] = useState("login"); // "login" | "register" | "recover"
+  const [activeTab, setActiveTab] = useState(initialMode); // "login" | "register" | "recover" | "reset"
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -33,7 +33,7 @@ export default function AuthModal({ onClose }) {
     setSuccess(null);
     setLoading(true);
 
-    if (activeTab === "register" && password !== confirmPassword) {
+    if ((activeTab === "register" || activeTab === "reset") && password !== confirmPassword) {
       setError("Las contraseñas no coinciden.");
       setLoading(false);
       return;
@@ -41,6 +41,7 @@ export default function AuthModal({ onClose }) {
 
     let endpoint;
     let bodyData;
+    let headers = { "Content-Type": "application/json" };
 
     if (activeTab === "login") {
       endpoint = "/api/auth/login";
@@ -51,12 +52,16 @@ export default function AuthModal({ onClose }) {
     } else if (activeTab === "recover") {
       endpoint = "/api/auth/recover";
       bodyData = { email };
+    } else if (activeTab === "reset") {
+      endpoint = "/api/auth/reset-password";
+      bodyData = { password };
+      headers["Authorization"] = `Bearer ${resetToken}`;
     }
 
     try {
       const res = await fetch(`${API_URL}${endpoint}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(bodyData),
       });
       const json = await res.json();
@@ -70,6 +75,9 @@ export default function AuthModal({ onClose }) {
         setSuccess("¡Cuenta creada! Revisá tu email para confirmarla.");
       } else if (activeTab === "recover") {
         setSuccess(json.message);
+      } else if (activeTab === "reset") {
+        setSuccess("Contraseña actualizada correctamente. Ya podés iniciar sesión.");
+        setTimeout(() => handleTabChange("login"), 2000);
       } else {
         // Login exitoso: guardamos sesión y cerramos el modal
         login(json.user, json.token);
@@ -94,15 +102,16 @@ export default function AuthModal({ onClose }) {
       <div className="relative z-10 w-full max-w-md mx-4 bg-[#18181b] border border-[#27272a] rounded-2xl shadow-2xl overflow-hidden">
         {/* Close Button */}
         <button
+          type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-full text-[#a1a1aa] hover:text-white hover:bg-[#27272a] transition-colors"
+          className="absolute top-4 right-4 p-1.5 rounded-full text-[#a1a1aa] hover:text-white hover:bg-[#27272a] transition-colors z-50"
           aria-label="Cerrar"
         >
           <X className="h-5 w-5" />
         </button>
 
         {/* Tabs */}
-        {activeTab !== "recover" ? (
+        {activeTab === "login" || activeTab === "register" ? (
           <div className="flex border-b border-[#27272a]">
             <button
               onClick={() => handleTabChange("login")}
@@ -134,7 +143,7 @@ export default function AuthModal({ onClose }) {
         ) : (
           <div className="flex border-b border-[#27272a]">
             <div className="flex-1 py-4 text-sm font-medium text-white text-center relative">
-              Recuperar Contraseña
+              {activeTab === "recover" ? "Recuperar Contraseña" : "Elegir Nueva Contraseña"}
               <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" />
             </div>
           </div>

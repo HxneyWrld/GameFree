@@ -12,9 +12,25 @@ function GameFeedApp() {
   const [loading,      setLoading]      = useState(true);
   const [error,        setError]        = useState(null);
   const [showModal,    setShowModal]    = useState(false);
+  const [authMode,     setAuthMode]     = useState("login");
+  const [resetToken,   setResetToken]   = useState(null);
   const [tab,          setTab]          = useState("feed");
   const [claimedIds,   setClaimedIds]   = useState(new Set());
   const [favoritedIds, setFavoritedIds] = useState(new Set());
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash && hash.includes("type=recovery")) {
+      const params = new URLSearchParams(hash.substring(1));
+      const accessToken = params.get("access_token");
+      if (accessToken) {
+        setResetToken(accessToken);
+        setAuthMode("reset");
+        setShowModal(true);
+        window.history.replaceState(null, "", window.location.pathname);
+      }
+    }
+  }, []);
 
   async function loadData() {
     setLoading(true);
@@ -74,15 +90,27 @@ function GameFeedApp() {
     setGames((prev) => prev.filter((g) => g.id !== gameId));
   }
 
+  const handleOpenAuth = () => {
+    setAuthMode("login");
+    setResetToken(null);
+    setShowModal(true);
+  };
+
   return (
     <div className="min-h-screen" style={{ background: "#0d1117" }}>
-      {showModal && <AuthModal onClose={() => setShowModal(false)} />}
+      {showModal && (
+        <AuthModal 
+          onClose={() => setShowModal(false)} 
+          initialMode={authMode} 
+          resetToken={resetToken} 
+        />
+      )}
 
       {/* ── Navbar ─────────────────────────────────────────── */}
       <Navbar
         activeTab={tab}
         onTabChange={setTab}
-        onOpenAuth={() => setShowModal(true)}
+        onOpenAuth={handleOpenAuth}
       />
 
       {/* ── Contenido ──────────────────────────────────────── */}

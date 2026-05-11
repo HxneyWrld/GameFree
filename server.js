@@ -166,6 +166,30 @@ app.post("/api/auth/recover", async (req, res) => {
 });
 
 // ─────────────────────────────────────────────────────────────
+// AUTH: Restablecer contraseña
+// POST /api/auth/reset-password
+// Header: Authorization: Bearer <token_de_recuperacion>
+// Body: { password }
+// ─────────────────────────────────────────────────────────────
+app.post("/api/auth/reset-password", verificarToken, async (req, res) => {
+  const { password } = req.body;
+  
+  if (!password) {
+    return res.status(400).json({ success: false, message: "La nueva contraseña es requerida." });
+  }
+
+  // Supabase permite actualizar al usuario si el token JWT es válido
+  const db = supabaseAs(req.token);
+  const { error } = await db.auth.updateUser({ password });
+
+  if (error) {
+    return res.status(400).json({ success: false, message: error.message });
+  }
+
+  return res.status(200).json({ success: true, message: "Contraseña actualizada exitosamente." });
+});
+
+// ─────────────────────────────────────────────────────────────
 // AUTH: Login
 // POST /api/auth/login
 // Body: { email, password }
