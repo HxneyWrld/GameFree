@@ -1,6 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
+/* ── Gaming Design Tokens ──────────────────────────────── */
+:root {
+  --neon-purple:    oklch(0.65 0.28 295);
+  --neon-purple-60: oklch(0.65 0.28 295 / 0.6);
+  --neon-purple-25: oklch(0.65 0.28 295 / 0.25);
+  --neon-purple-10: oklch(0.65 0.28 295 / 0.10);
+  --neon-green:     oklch(0.80 0.25 145);
+  --gaming-dark:    oklch(0.08 0.005 285);
+  --gaming-surface: oklch(0.14 0.008 285);
+  --border-subtle:  oklch(0.25 0.015 285 / 0.4);
+  --text-muted:     oklch(0.65 0 0);
+}
+
 @layer base {
   * {
     box-sizing: border-box;
@@ -137,5 +150,332 @@
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
+  }
+}
+
+/* ────────────────────────────────────────────────────────
+   NAVBAR — Gaming style
+──────────────────────────────────────────────────────── */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+  border-bottom: 1px solid var(--border-subtle);
+  background: color-mix(in oklch, var(--gaming-dark) 95%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Línea de brillo neon en el top */
+.navbar-glow-line {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--neon-purple-60),
+    transparent
+  );
+}
+
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  gap: 1rem;
+}
+
+/* ── Logo ───────────────────────────────────────────── */
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.3s;
+  flex-shrink: 0;
+}
+.navbar-logo:hover {
+  transform: scale(1.03);
+}
+
+.navbar-logo-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--neon-purple), color-mix(in oklch, var(--neon-purple) 70%, transparent));
+  box-shadow: 0 4px 14px var(--neon-purple-25);
+  transition: box-shadow 0.3s;
+}
+.navbar-logo:hover .navbar-logo-icon {
+  box-shadow: 0 4px 20px var(--neon-purple-60);
+}
+
+.navbar-logo-text {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.navbar-logo-game { color: #f0f0f0; }
+.navbar-logo-free {
+  background: linear-gradient(90deg, var(--neon-purple), var(--neon-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Nav links desktop ──────────────────────────────── */
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.navbar-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  background: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.25s, background 0.25s;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.navbar-link:hover {
+  color: #f0f0f0;
+  background: color-mix(in srgb, white 5%, transparent);
+}
+.navbar-link--active {
+  color: #f0f0f0;
+}
+.navbar-link-icon {
+  transition: color 0.25s;
+}
+.navbar-link:hover .navbar-link-icon,
+.navbar-link--active .navbar-link-icon {
+  color: var(--neon-purple);
+}
+
+/* Underline animada */
+.navbar-link-underline {
+  position: absolute;
+  bottom: 0;
+  left: 0.5rem;
+  right: 0.5rem;
+  height: 1px;
+  background: linear-gradient(90deg, var(--neon-purple), var(--neon-green));
+  transform: scaleX(0);
+  transition: transform 0.3s;
+  transform-origin: center;
+}
+.navbar-link:hover .navbar-link-underline,
+.navbar-link--active .navbar-link-underline {
+  transform: scaleX(1);
+}
+
+/* ── Auth desktop ───────────────────────────────────── */
+.navbar-auth {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.navbar-username {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Botón primario con shimmer */
+.navbar-btn-primary {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.5rem;
+  border: none;
+  background: linear-gradient(135deg, var(--neon-purple), color-mix(in oklch, var(--neon-purple) 80%, transparent));
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px var(--neon-purple-25);
+  transition: box-shadow 0.3s, transform 0.2s;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.navbar-btn-primary:hover {
+  box-shadow: 0 4px 22px var(--neon-purple-60);
+  transform: scale(1.02);
+}
+.navbar-btn-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+/* Shimmer */
+.navbar-btn-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s;
+}
+.navbar-btn-primary:hover .navbar-btn-shimmer {
+  transform: translateX(100%);
+}
+
+/* Botón outline */
+.navbar-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-subtle);
+  background: var(--gaming-surface);
+  color: #ccc;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.25s, color 0.25s, background 0.25s;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.navbar-btn-outline:hover {
+  border-color: var(--neon-purple-60);
+  color: #fff;
+  background: color-mix(in srgb, white 4%, var(--gaming-surface));
+}
+
+.navbar-btn--full {
+  width: 100%;
+  justify-content: center;
+}
+
+/* ── Hamburguesa mobile ─────────────────────────────── */
+.navbar-hamburger {
+  position: relative;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-subtle);
+  background: var(--gaming-surface);
+  color: #ccc;
+  cursor: pointer;
+  transition: border-color 0.25s, background 0.25s;
+  flex-shrink: 0;
+}
+.navbar-hamburger:hover {
+  border-color: var(--neon-purple-60);
+  background: color-mix(in srgb, white 4%, var(--gaming-surface));
+}
+.navbar-hamburger-icon {
+  position: absolute;
+  transition: opacity 0.25s, transform 0.25s;
+}
+.navbar-hamburger-icon--hidden {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.5);
+  pointer-events: none;
+}
+
+/* ── Menú mobile ────────────────────────────────────── */
+.navbar-mobile-menu {
+  overflow: hidden;
+  border-top: 1px solid transparent;
+  background: color-mix(in oklch, var(--gaming-dark) 98%, transparent);
+  backdrop-filter: blur(20px);
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.35s ease, opacity 0.3s ease, border-color 0.3s;
+}
+.navbar-mobile-menu--open {
+  max-height: 400px;
+  opacity: 1;
+  border-top-color: var(--border-subtle);
+}
+
+.navbar-mobile-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem;
+}
+
+.navbar-mobile-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  background: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  text-align: left;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.navbar-mobile-link:hover {
+  background: var(--gaming-surface);
+  color: #f0f0f0;
+}
+.navbar-mobile-link--active {
+  background: var(--gaming-surface);
+  color: #f0f0f0;
+}
+.navbar-mobile-link .navbar-link-icon {
+  color: inherit;
+}
+.navbar-mobile-link:hover .navbar-link-icon,
+.navbar-mobile-link--active .navbar-link-icon {
+  color: var(--neon-purple);
+}
+
+.navbar-mobile-auth {
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 0.25rem;
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  .navbar-links,
+  .navbar-auth {
+    display: none;
+  }
+  .navbar-hamburger {
+    display: flex;
   }
 }

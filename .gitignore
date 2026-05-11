@@ -1,5 +1,9 @@
 # Variables de entorno
 .env
 
-# Dependencias de Node (aprovecha de agregarlo si no lo tienes)
+# Dependencias de Node
 node_modules/
+
+# Archivos temporales / extraídos localmente
+gaming-navbar-extracted/
+GameFree_Documentacion.md

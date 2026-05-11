@@ -1,71 +1,135 @@
-// Navbar.jsx — Barra de navegación superior
 import { useState } from "react";
+import { Gamepad2, Flame, Library, Heart, Menu, X, LogIn, LogOut } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
-export default function Navbar() {
-  const [activeNav, setActiveNav] = useState("inicio");
+const navLinks = [
+  { key: "feed",      label: "Feed de Ofertas", icon: Flame },
+  { key: "library",   label: "Mi Biblioteca",   icon: Library },
+  { key: "favorites", label: "Favoritos",        icon: Heart },
+];
+
+export default function Navbar({ activeTab, onTabChange, onOpenAuth }) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isLoggedIn, user, logout } = useAuth();
+
+  const handleNavClick = (key) => {
+    onTabChange(key);
+    setIsMenuOpen(false);
+  };
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#0d1117]/95 backdrop-blur border-b border-[#30363d]">
-      <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-6">
+    <nav className="navbar">
+      {/* Línea de brillo superior */}
+      <div className="navbar-glow-line" />
 
-        {/* ── Logo ── */}
-        <div className="flex items-center gap-2 shrink-0">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-base">
-            🎮
+      <div className="navbar-inner">
+        {/* Logo */}
+        <button className="navbar-logo" onClick={() => handleNavClick("feed")}>
+          <div className="navbar-logo-icon">
+            <Gamepad2 size={20} color="white" />
           </div>
-          <span className="font-bold text-base">
-            <span className="text-white">Game</span>
-            <span className="text-blue-400">Free</span>
+          <span className="navbar-logo-text">
+            <span className="navbar-logo-game">Game</span>
+            <span className="navbar-logo-free">Free</span>
           </span>
-          <span className="bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full -mt-3 -ml-1 tracking-wide">
-            HOT
-          </span>
+        </button>
+
+        {/* Nav desktop */}
+        <div className="navbar-links">
+          {navLinks.map(({ key, label, icon: Icon }) => {
+            if (!isLoggedIn && key !== "feed") return null;
+            return (
+              <button
+                key={key}
+                onClick={() => handleNavClick(key)}
+                className={`navbar-link ${activeTab === key ? "navbar-link--active" : ""}`}
+              >
+                <Icon size={16} className="navbar-link-icon" />
+                <span>{label}</span>
+                <span className="navbar-link-underline" />
+              </button>
+            );
+          })}
         </div>
 
-        {/* ── Nav links ── */}
-        <div className="hidden sm:flex items-center gap-6">
-          {[
-            { id: "inicio", label: "Inicio" },
-            { id: "ofertas", label: "Ofertas Activas" },
-            { id: "biblioteca", label: "Mi Biblioteca" },
-          ].map(({ id, label }) => (
-            <button
-              key={id}
-              onClick={() => setActiveNav(id)}
-              className={activeNav === id ? "nav-link-active" : "nav-link"}
-            >
-              {label}
+        {/* Auth desktop */}
+        <div className="navbar-auth">
+          {isLoggedIn ? (
+            <>
+              <span className="navbar-username">
+                {user?.email?.split("@")[0]}
+              </span>
+              <button className="navbar-btn-outline" onClick={logout}>
+                <LogOut size={15} />
+                Salir
+              </button>
+            </>
+          ) : (
+            <button className="navbar-btn-primary" onClick={onOpenAuth}>
+              <span className="navbar-btn-shimmer" />
+              <span className="navbar-btn-content">
+                <LogIn size={16} />
+                Iniciar Sesión
+              </span>
             </button>
-          ))}
+          )}
         </div>
 
-        {/* ── Search ── */}
-        <div className="flex-1 max-w-56">
-          <div className="relative">
-            <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#8b949e]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input
-              type="text"
-              placeholder="Buscar..."
-              className="w-full bg-[#161b22] border border-[#30363d] text-sm text-white placeholder-[#8b949e] rounded-lg pl-8 pr-3 py-1.5 focus:outline-none focus:border-blue-500 transition-colors"
-            />
+        {/* Botón hamburguesa mobile */}
+        <button
+          className="navbar-hamburger"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
+        >
+          <Menu
+            size={20}
+            className={`navbar-hamburger-icon ${isMenuOpen ? "navbar-hamburger-icon--hidden" : ""}`}
+          />
+          <X
+            size={20}
+            className={`navbar-hamburger-icon ${!isMenuOpen ? "navbar-hamburger-icon--hidden" : ""}`}
+          />
+        </button>
+      </div>
+
+      {/* Menú mobile */}
+      <div className={`navbar-mobile-menu ${isMenuOpen ? "navbar-mobile-menu--open" : ""}`}>
+        <div className="navbar-mobile-links">
+          {navLinks.map(({ key, label, icon: Icon }, index) => {
+            if (!isLoggedIn && key !== "feed") return null;
+            return (
+              <button
+                key={key}
+                onClick={() => handleNavClick(key)}
+                className={`navbar-mobile-link ${activeTab === key ? "navbar-mobile-link--active" : ""}`}
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                <Icon size={18} className="navbar-link-icon" />
+                <span>{label}</span>
+              </button>
+            );
+          })}
+
+          <div className="navbar-mobile-auth">
+            {isLoggedIn ? (
+              <button
+                className="navbar-btn-outline navbar-btn--full"
+                onClick={() => { logout(); setIsMenuOpen(false); }}
+              >
+                <LogOut size={15} />
+                Salir ({user?.email?.split("@")[0]})
+              </button>
+            ) : (
+              <button
+                className="navbar-btn-primary navbar-btn--full"
+                onClick={() => { onOpenAuth(); setIsMenuOpen(false); }}
+              >
+                <LogIn size={15} />
+                Iniciar Sesión / Registrarse
+              </button>
+            )}
           </div>
         </div>
-
-        {/* ── Spacer ── */}
-        <div className="flex-1" />
-
-        {/* ── Auth buttons ── */}
-        <div className="flex items-center gap-2 shrink-0">
-          <button className="btn-outline">Iniciar Sesión</button>
-          <button className="btn-primary">Registrarse</button>
-          {/* Avatar */}
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white ml-1">
-            U
-          </div>
-        </div>
-
       </div>
     </nav>
   );
