@@ -155,25 +155,27 @@ export default function AuthModal({ onClose, initialMode = "login", resetToken =
           {error && <p className="text-sm text-rose-500 bg-rose-500/10 border border-rose-500/20 rounded-lg px-3 py-2">{error}</p>}
           {success && <p className="text-sm text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 rounded-lg px-3 py-2">{success}</p>}
 
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium leading-none text-[#d4d4d8]">
-              Correo electrónico
-            </label>
-            <input
-              id="email"
-              type="email"
-              placeholder="tu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="flex h-10 w-full rounded-md border border-[#3f3f46] bg-[#27272a] px-3 py-2 text-sm text-white placeholder:text-[#71717a] focus:outline-none focus:ring-2 focus:ring-[#52525b] focus:border-transparent"
-            />
-          </div>
+          {activeTab !== "reset" && (
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-sm font-medium leading-none text-[#d4d4d8]">
+                Correo electrónico
+              </label>
+              <input
+                id="email"
+                type="email"
+                placeholder="tu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="flex h-10 w-full rounded-md border border-[#3f3f46] bg-[#27272a] px-3 py-2 text-sm text-white placeholder:text-[#71717a] focus:outline-none focus:ring-2 focus:ring-[#52525b] focus:border-transparent"
+              />
+            </div>
+          )}
 
           {activeTab !== "recover" && (
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-medium leading-none text-[#d4d4d8]">
-                Contraseña
+                {activeTab === "reset" ? "Nueva contraseña" : "Contraseña"}
               </label>
               <input
                 id="password"
@@ -187,10 +189,10 @@ export default function AuthModal({ onClose, initialMode = "login", resetToken =
             </div>
           )}
 
-          {activeTab === "register" && (
+          {(activeTab === "register" || activeTab === "reset") && (
             <div className="space-y-2">
               <label htmlFor="confirmPassword" className="text-sm font-medium leading-none text-[#d4d4d8]">
-                Confirmar contraseña
+                {activeTab === "reset" ? "Confirmar nueva contraseña" : "Confirmar contraseña"}
               </label>
               <input
                 id="confirmPassword"
@@ -209,7 +211,15 @@ export default function AuthModal({ onClose, initialMode = "login", resetToken =
             disabled={loading}
             className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 w-full bg-white text-zinc-900 hover:bg-zinc-200 font-medium py-2.5 h-10"
           >
-            {loading ? "Cargando..." : activeTab === "login" ? "Iniciar Sesión" : activeTab === "register" ? "Crear Cuenta" : "Enviar instrucciones"}
+            {loading 
+              ? "Cargando..." 
+              : activeTab === "login" 
+                ? "Iniciar Sesión" 
+                : activeTab === "register" 
+                  ? "Crear Cuenta" 
+                  : activeTab === "reset"
+                    ? "Guardar nueva contraseña"
+                    : "Enviar instrucciones"}
           </button>
 
           {activeTab === "login" && (
