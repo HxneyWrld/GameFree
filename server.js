@@ -142,6 +142,30 @@ app.post("/api/auth/register", async (req, res) => {
 });
 
 // ─────────────────────────────────────────────────────────────
+// AUTH: Recuperar contraseña
+// POST /api/auth/recover
+// Body: { email }
+// ─────────────────────────────────────────────────────────────
+app.post("/api/auth/recover", async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ success: false, message: "Email requerido." });
+  }
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email);
+
+  if (error) {
+    return res.status(400).json({ success: false, message: error.message });
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Si el correo está registrado, recibirás instrucciones para restablecer tu contraseña.",
+  });
+});
+
+// ─────────────────────────────────────────────────────────────
 // AUTH: Login
 // POST /api/auth/login
 // Body: { email, password }
