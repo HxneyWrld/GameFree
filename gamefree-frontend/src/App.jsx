@@ -4,6 +4,8 @@ import GameCard from "./components/GameCard";
 import AuthModal from "./components/AuthModal";
 import Navbar from "./components/Navbar";
 
+import HeroSection from "./components/HeroSection";
+
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
 function GameFeedApp() {
@@ -113,8 +115,12 @@ function GameFeedApp() {
         onOpenAuth={handleOpenAuth}
       />
 
+      {tab === "feed" && (
+        <HeroSection onExplore={() => document.getElementById('games-grid')?.scrollIntoView({ behavior: 'smooth' })} />
+      )}
+
       {/* ── Contenido ──────────────────────────────────────── */}
-      <main className="max-w-5xl mx-auto px-4 py-10">
+      <main id="games-grid" className="max-w-5xl mx-auto px-4 py-10">
 
         {/* Contador */}
         {!loading && !error && games.length > 0 && (

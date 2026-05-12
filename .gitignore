@@ -4,8 +4,9 @@
 # Dependencias de Node
 node_modules/
 
-# Archivos temporales / extraídos localmente
+# Directorios de componentes extraídos (para no ensuciar el repo)
 gaming-navbar-extracted/
 game-card-extracted/
 auth-modal-extracted/
+hero-section-extracted/
 GameFree_Documentacion.md
