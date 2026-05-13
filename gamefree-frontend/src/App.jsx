@@ -127,6 +127,7 @@ function GameFeedApp() {
   const [selectedStores, setSelectedStores] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState([]);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const storeCounts = games.reduce((acc, g) => {
     acc[g.store_name] = (acc[g.store_name] || 0) + 1;
@@ -158,10 +159,15 @@ function GameFeedApp() {
   const handleClearAll = () => {
     setSelectedStores([]);
     setSelectedStatus([]);
+    setSearchQuery("");
   };
 
   const filteredGames = games.filter(g => {
     if (selectedStores.length > 0 && !selectedStores.includes(g.store_name)) return false;
+    if (searchQuery.trim() !== "") {
+      const q = searchQuery.toLowerCase();
+      if (!g.title.toLowerCase().includes(q)) return false;
+    }
     return true;
   });
 
@@ -241,6 +247,24 @@ function GameFeedApp() {
                   ${totalSavings.toFixed(2)}
                 </p>
               </div>
+            </div>
+          )}
+
+          {/* Barra de Búsqueda */}
+          {!loading && !error && games.length > 0 && (
+            <div className="mb-6 relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-[#8b949e]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                placeholder={tab === "feed" ? "Buscar juegos por nombre..." : "Buscar en tu bóveda..."}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-[#161b22] border border-[#30363d] text-white rounded-xl pl-11 pr-4 py-3.5 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors placeholder-[#8b949e] shadow-sm"
+              />
             </div>
           )}
 
