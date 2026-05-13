@@ -17,71 +17,28 @@ const STORE_STYLES = {
   "Battle.net": "bg-cyan-500 text-white",
 };
 
-export default function GameCard({ game, onClaimed, onUnclaimed, onUnfavorited, initialClaimed = false, initialFavorited = false }) {
-  const { token, isLoggedIn } = useAuth();
-
-  const [claimed,   setClaimed]   = useState(initialClaimed);
-  const [favorited, setFavorited] = useState(initialFavorited);
-  const [loading,   setLoading]   = useState(false);
-  const [removing,  setRemoving]  = useState(false);
-
-  async function callApi(endpoint, method) {
-    const res = await fetch(`${API_URL}${endpoint}`, {
-      method,
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return res.json();
-  }
-
-  async function handleClaim() {
-    if (!isLoggedIn || loading) return;
-    setLoading(true);
-
-    if (!claimed) {
-      const json = await callApi(`/api/games/${game.id}/claim`, "POST");
-      if (json.success || json.message === "Ya reclamado anteriormente.") {
-        setClaimed(true);
-        setTimeout(() => onClaimed?.(game.id), 800);
-      }
-    } else {
-      const json = await callApi(`/api/games/${game.id}/claim`, "DELETE");
-      if (json.success) {
-        setClaimed(false);
-        setRemoving(true);
-        setTimeout(() => onUnclaimed?.(game.id), 500);
-      }
-    }
-
-    setLoading(false);
-  }
-
-  async function handleFavorite() {
-    if (!isLoggedIn || loading) return;
-    setLoading(true);
-
-    const wasFavorited = favorited;
-    const method = wasFavorited ? "DELETE" : "POST";
-    const json   = await callApi(`/api/games/${game.id}/favorite`, method);
-    if (json.success) {
-      setFavorited(!wasFavorited);
-      if (wasFavorited) {
-        setRemoving(true);
-        setTimeout(() => onUnfavorited?.(game.id), 500);
-      }
-    }
-
-    setLoading(false);
-  }
+export default function GameCard({ game, onOptimisticClaim, initialClaimed = false }) {
+  const { token, isLoggedIn, login } = useAuth();
+  const [claimed, setClaimed] = useState(initialClaimed);
 
   const badgeStyle = STORE_STYLES[game.store_name] || "bg-[#30363d] text-white";
 
+  function handleClaimClick(e) {
+    // Si ya está reclamado, no hacemos nada extra más que el link por defecto
+    if (claimed || !isLoggedIn) return;
+
+    // Marcamos localmente como reclamado
+    setClaimed(true);
+
+    // Llamamos al padre para mostrar el Toast y actualizar el ahorro total
+    if (onOptimisticClaim) {
+      onOptimisticClaim(game);
+    }
+  }
+
   return (
     <div
-      className={`group relative flex flex-col overflow-hidden rounded-xl bg-[#161b22] border border-[#30363d] transition-all duration-300 ease-out ${
-        removing || (claimed && !initialClaimed)
-          ? "opacity-0 scale-95 pointer-events-none"
-          : "hover:-translate-y-2 hover:shadow-2xl hover:shadow-black/50 hover:border-[#8b949e]"
-      }`}
+      className={`group relative flex flex-col overflow-hidden rounded-xl bg-[#161b22] border border-[#30363d] transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-black/50 hover:border-[#8b949e]`}
     >
       {/* Image Container */}
       <div className="relative aspect-[16/9] overflow-hidden bg-[#0d1117]">
@@ -126,47 +83,20 @@ export default function GameCard({ game, onClaimed, onUnclaimed, onUnfavorited, 
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2 pt-2 mt-auto">
+        <div className="flex items-center pt-2 mt-auto">
           <a
             href={game.claim_url}
             target="_blank"
             rel="noreferrer"
-            className="flex-1 flex items-center justify-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold py-2.5 rounded-lg transition-colors text-center"
+            onClick={handleClaimClick}
+            className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-semibold py-2.5 rounded-lg transition-colors text-center ${
+              claimed 
+                ? "bg-[#21262d] border border-[#30363d] text-emerald-400 hover:bg-[#30363d]" 
+                : "bg-indigo-600 hover:bg-indigo-500 text-white"
+            }`}
           >
-            Reclamar →
+            {claimed ? "En tu Bóveda ✓" : "Obtener y guardar →"}
           </a>
-          
-          {isLoggedIn && (
-            <>
-              <button
-                onClick={handleFavorite}
-                disabled={loading}
-                title={favorited ? "Quitar de favoritos" : "Agregar a favoritos"}
-                className={`flex items-center justify-center h-10 w-10 rounded-lg border transition-colors disabled:opacity-50 ${
-                  favorited
-                    ? "border-rose-500 bg-rose-500/20 hover:bg-rose-500/30 text-rose-500"
-                    : "border-[#30363d] bg-[#21262d] hover:bg-[#30363d] text-[#8b949e]"
-                }`}
-              >
-                <Heart
-                  className={`h-5 w-5 transition-colors ${favorited ? "fill-rose-500 text-rose-500" : "text-[#8b949e]"}`}
-                />
-              </button>
-
-              <button
-                onClick={handleClaim}
-                disabled={loading}
-                title={claimed ? "Marcar como no reclamado" : "Ya lo tengo"}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 border ${
-                  claimed
-                    ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-rose-500/10 hover:border-rose-500/30 hover:text-rose-400"
-                    : "border-[#30363d] text-[#8b949e] hover:bg-[#21262d]"
-                }`}
-              >
-                {loading ? "..." : claimed ? "✓" : "Tengo"}
-              </button>
-            </>
-          )}
         </div>
       </div>
     </div>

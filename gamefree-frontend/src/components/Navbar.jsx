@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { Gamepad2, Flame, Library, Heart, Menu, X, LogIn, LogOut } from "lucide-react";
+import { Gamepad2, Flame, Wallet, Menu, X, LogIn, LogOut } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 const navLinks = [
   { key: "feed",      label: "Feed de Ofertas", icon: Flame },
-  { key: "library",   label: "Mi Biblioteca",   icon: Library },
-  { key: "favorites", label: "Favoritos",        icon: Heart },
+  { key: "library",   label: "Mi Bóveda",       icon: Wallet },
 ];
 
 export default function Navbar({ activeTab, onTabChange, onOpenAuth }) {

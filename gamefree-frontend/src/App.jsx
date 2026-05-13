@@ -19,7 +19,9 @@ function GameFeedApp() {
   const [resetToken,   setResetToken]   = useState(null);
   const [tab,          setTab]          = useState("feed");
   const [claimedIds,   setClaimedIds]   = useState(new Set());
-  const [favoritedIds, setFavoritedIds] = useState(new Set());
+  
+  // Custom Toast State
+  const [toastMessage, setToastMessage] = useState(null);
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -32,15 +34,12 @@ function GameFeedApp() {
       const refreshToken = params.get("refresh_token");
 
       if (accessToken) {
-        // Limpiamos la URL inmediatamente para que el token no quede visible
         window.history.replaceState(null, "", window.location.pathname);
-
         if (type === "recovery") {
           setResetToken({ access_token: accessToken, refresh_token: refreshToken });
           setAuthMode("reset");
           setShowModal(true);
         } else if (type === "signup" || type === "magiclink") {
-          // Extraemos los datos del JWT localmente
           try {
             const payload = JSON.parse(atob(accessToken.split('.')[1]));
             login({ id: payload.sub, email: payload.email }, accessToken);
@@ -59,7 +58,6 @@ function GameFeedApp() {
     const endpoints = {
       feed:      "/api/games/free",
       library:   "/api/user/library",
-      favorites: "/api/user/favorites",
     };
     try {
       const res  = await fetch(`${API_URL}${endpoints[tab]}`, { headers });
@@ -70,8 +68,7 @@ function GameFeedApp() {
       } else {
         setGames(json.data.map((entry) => ({
           ...entry.games,
-          claimedAt:   entry.claimed_at,
-          favoritedAt: entry.favorited_at,
+          claimedAt: entry.claimed_at,
         })));
       }
     } catch (err) {
@@ -84,36 +81,46 @@ function GameFeedApp() {
   async function loadUserState() {
     if (!isLoggedIn) {
       setClaimedIds(new Set());
-      setFavoritedIds(new Set());
       return;
     }
     const headers = { Authorization: `Bearer ${token}` };
-    const [claimedRes, favoritesRes] = await Promise.all([
-      fetch(`${API_URL}/api/user/library`,   { headers }),
-      fetch(`${API_URL}/api/user/favorites`, { headers }),
-    ]);
-    const claimed   = await claimedRes.json();
-    const favorites = await favoritesRes.json();
-    if (claimed.success)   setClaimedIds(new Set(claimed.data.map((e) => e.games.id)));
-    if (favorites.success) setFavoritedIds(new Set(favorites.data.map((e) => e.games.id)));
+    const res = await fetch(`${API_URL}/api/user/library`, { headers });
+    const json = await res.json();
+    if (json.success) setClaimedIds(new Set(json.data.map((e) => e.games.id)));
   }
 
   useEffect(() => { loadData(); },      [token, tab]);
   useEffect(() => { loadUserState(); }, [isLoggedIn, token]);
 
-  // Si cierra sesión estando en library/favorites, volver al feed
   useEffect(() => {
     if (!isLoggedIn && tab !== "feed") setTab("feed");
   }, [isLoggedIn]);
-
-  function handleGameClaimed(gameId) {
-    setGames((prev) => prev.filter((g) => g.id !== gameId));
-  }
 
   const handleOpenAuth = () => {
     setAuthMode("login");
     setResetToken(null);
     setShowModal(true);
+  };
+
+  const handleOptimisticClaim = async (game) => {
+    // Actualizamos localmente primero
+    setClaimedIds(prev => new Set([...prev, game.id]));
+    
+    const priceToSave = game.original_price > 0 ? game.original_price.toFixed(2) : "0.00";
+    setToastMessage(`¡Redirigiendo a la tienda! Sumamos $${priceToSave} a tu ahorro total.`);
+    
+    // Ocultar toast después de 4 segundos
+    setTimeout(() => setToastMessage(null), 4000);
+
+    // Hacemos la llamada al backend en segundo plano
+    try {
+      await fetch(`${API_URL}/api/games/${game.id}/claim`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (error) {
+      console.error("Error al guardar en el historial:", error);
+    }
   };
 
   // ── Filters Logic ────────────────────────────────────────────────────────
@@ -158,6 +165,8 @@ function GameFeedApp() {
     return true;
   });
 
+  const totalSavings = games.reduce((acc, g) => acc + (g.original_price || 0), 0);
+
   return (
     <div className="min-h-screen" style={{ background: "#0d1117" }}>
       {showModal && (
@@ -166,6 +175,16 @@ function GameFeedApp() {
           initialMode={authMode} 
           resetToken={resetToken} 
         />
+      )}
+
+      {/* ── Custom Toast ─────────────────────────────────────────── */}
+      {toastMessage && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-bounce-in">
+          <div className="bg-emerald-500 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 border border-emerald-400">
+            <span className="font-semibold text-sm">{toastMessage}</span>
+            <button onClick={() => setToastMessage(null)} className="text-white hover:text-emerald-200 p-1">✕</button>
+          </div>
+        </div>
       )}
 
       {/* ── Navbar ─────────────────────────────────────────── */}
@@ -184,13 +203,10 @@ function GameFeedApp() {
         
         {/* Sidebar Responsive Drawer */}
         <div className={`fixed inset-0 z-40 transition-opacity md:static md:z-auto ${isMobileFilterOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none md:opacity-100 md:pointer-events-auto'}`}>
-          {/* Overlay oscuro en móvil */}
           <div 
             className="absolute inset-0 bg-black/70 backdrop-blur-sm md:hidden" 
             onClick={() => setIsMobileFilterOpen(false)}
           />
-          
-          {/* Contenedor del Sidebar */}
           <div className={`absolute left-0 top-0 bottom-0 w-[280px] max-w-[80vw] bg-[#0d1117] p-4 transform transition-transform md:static md:w-64 md:p-0 md:bg-transparent md:transform-none ${isMobileFilterOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
             <div className="flex items-center justify-between mb-4 md:hidden">
               <span className="font-semibold text-white">Menú de Filtros</span>
@@ -211,7 +227,24 @@ function GameFeedApp() {
 
         {/* Main Grid Area */}
         <div className="flex-1 min-w-0">
-          {/* Contador */}
+          
+          {/* Banner de Ahorro para Mi Bóveda */}
+          {tab === "library" && !loading && !error && (
+            <div className="mb-8 p-6 rounded-2xl bg-gradient-to-br from-indigo-900/40 to-purple-900/20 border border-indigo-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-1">Mi Bóveda de Ahorros</h2>
+                <p className="text-indigo-200 text-sm">Historial de juegos que has reclamado gratis.</p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-indigo-300 font-medium mb-1">Has ahorrado un total de</p>
+                <p className="text-4xl font-black text-emerald-400 drop-shadow-md">
+                  ${totalSavings.toFixed(2)}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Contador y botón filtro móvil */}
           {!loading && !error && filteredGames.length > 0 && (
             <div className="mb-6 flex items-center justify-between">
               <span className="inline-flex items-center gap-1.5 text-xs font-medium bg-indigo-900/30 text-indigo-300 border border-indigo-700/40 px-3 py-1 rounded-full">
@@ -253,11 +286,10 @@ function GameFeedApp() {
           {/* Vacío general */}
           {!loading && !error && games.length === 0 && (
             <div className="flex flex-col items-center gap-3 py-20 text-center">
-              <span className="text-4xl">{tab === "feed" ? "😴" : "📭"}</span>
+              <span className="text-4xl">{tab === "feed" ? "😴" : "💸"}</span>
               <p className="text-gray-500 text-sm">
-                {tab === "feed"      && "Sin promociones activas ahora mismo."}
-                {tab === "library"   && "Todavía no marcaste ningún juego como reclamado."}
-                {tab === "favorites" && "Todavía no tienes juegos favoritos."}
+                {tab === "feed"    && "Sin promociones activas ahora mismo."}
+                {tab === "library" && "Tu bóveda está vacía. ¡Ve al feed y empieza a ahorrar!"}
               </p>
             </div>
           )}
@@ -282,11 +314,8 @@ function GameFeedApp() {
                 <li key={game.id}>
                   <GameCard
                     game={game}
-                    onClaimed={handleGameClaimed}
-                    onUnclaimed={handleGameClaimed}
-                    onUnfavorited={handleGameClaimed}
+                    onOptimisticClaim={handleOptimisticClaim}
                     initialClaimed={claimedIds.has(game.id)}
-                    initialFavorited={favoritedIds.has(game.id)}
                   />
                 </li>
               ))}
