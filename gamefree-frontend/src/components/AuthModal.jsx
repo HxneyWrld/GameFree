@@ -54,8 +54,11 @@ export default function AuthModal({ onClose, initialMode = "login", resetToken =
       bodyData = { email };
     } else if (activeTab === "reset") {
       endpoint = "/api/auth/reset-password";
-      bodyData = { password };
-      headers["Authorization"] = `Bearer ${resetToken}`;
+      bodyData = { 
+        password,
+        access_token: resetToken?.access_token,
+        refresh_token: resetToken?.refresh_token
+      };
     }
 
     try {

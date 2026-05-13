@@ -168,18 +168,28 @@ app.post("/api/auth/recover", async (req, res) => {
 // ─────────────────────────────────────────────────────────────
 // AUTH: Restablecer contraseña
 // POST /api/auth/reset-password
-// Header: Authorization: Bearer <token_de_recuperacion>
-// Body: { password }
+// Body: { password, access_token, refresh_token }
 // ─────────────────────────────────────────────────────────────
-app.post("/api/auth/reset-password", verificarToken, async (req, res) => {
-  const { password } = req.body;
+app.post("/api/auth/reset-password", async (req, res) => {
+  const { password, access_token, refresh_token } = req.body;
   
-  if (!password) {
-    return res.status(400).json({ success: false, message: "La nueva contraseña es requerida." });
+  if (!password || !access_token || !refresh_token) {
+    return res.status(400).json({ success: false, message: "Faltan credenciales para el restablecimiento." });
   }
 
-  // Supabase permite actualizar al usuario si el token JWT es válido
-  const db = supabaseAs(req.token);
+  const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // 1. Establecer la sesión activa en el cliente de Supabase usando los tokens de la URL
+  const { error: sessionError } = await db.auth.setSession({
+    access_token,
+    refresh_token
+  });
+
+  if (sessionError) {
+    return res.status(400).json({ success: false, message: "Sesión expirada o inválida. Solicita un nuevo correo." });
+  }
+
+  // 2. Actualizar la contraseña para el usuario autenticado
   const { error } = await db.auth.updateUser({ password });
 
   if (error) {

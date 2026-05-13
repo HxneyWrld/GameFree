@@ -26,8 +26,9 @@ function GameFeedApp() {
     if (hash && hash.includes("type=recovery")) {
       const params = new URLSearchParams(hash.substring(1));
       const accessToken = params.get("access_token");
-      if (accessToken) {
-        setResetToken(accessToken);
+      const refreshToken = params.get("refresh_token");
+      if (accessToken && refreshToken) {
+        setResetToken({ access_token: accessToken, refresh_token: refreshToken });
         setAuthMode("reset");
         setShowModal(true);
         window.history.replaceState(null, "", window.location.pathname);
