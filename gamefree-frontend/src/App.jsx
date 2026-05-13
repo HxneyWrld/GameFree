@@ -66,10 +66,14 @@ function GameFeedApp() {
       if (tab === "feed") {
         setGames(json.data);
       } else {
-        setGames(json.data.map((entry) => ({
-          ...entry.games,
-          claimedAt: entry.claimed_at,
-        })));
+        setGames(
+          json.data
+            .filter((entry) => entry.games)
+            .map((entry) => ({
+              ...entry.games,
+              claimedAt: entry.claimed_at,
+            }))
+        );
       }
     } catch (err) {
       setError(err.message);
@@ -163,6 +167,7 @@ function GameFeedApp() {
   };
 
   const filteredGames = games.filter(g => {
+    if (tab === "feed" && claimedIds.has(g.id)) return false;
     if (selectedStores.length > 0 && !selectedStores.includes(g.store_name)) return false;
     if (searchQuery.trim() !== "") {
       const q = searchQuery.toLowerCase();

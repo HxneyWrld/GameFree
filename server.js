@@ -327,7 +327,8 @@ app.post("/api/games/:id/claim", verificarToken, async (req, res) => {
   if (error) {
     console.error("[POST /claim] Supabase error:", error);
     if (error.code === "23505") {
-      return res.status(409).json({ success: false, message: "Ya reclamado anteriormente." });
+      // Ya reclamado
+      return res.status(200).json({ success: true, message: "Ya reclamado anteriormente.", alreadyClaimed: true });
     }
     return res.status(500).json({ success: false, message: error.message });
   }
