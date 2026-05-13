@@ -93,20 +93,6 @@ export default function GameCard({ game, onOptimisticClaim, initialClaimed = fal
           {game.store_name}
         </span>
 
-        {/* Metacritic Badge */}
-        {game.metacritic_score && (
-          <span
-            onClick={(e) => e.preventDefault()}
-            className={`absolute top-3 right-3 px-2.5 py-1 rounded-md text-xs font-bold shadow-lg backdrop-blur-sm cursor-default text-white ${
-              game.metacritic_score >= 75 ? "bg-emerald-500" :
-              game.metacritic_score >= 50 ? "bg-yellow-500" :
-                                           "bg-rose-500"
-            }`}
-          >
-            {game.metacritic_score}
-          </span>
-        )}
-
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#161b22] via-transparent to-transparent opacity-80" />
       </div>

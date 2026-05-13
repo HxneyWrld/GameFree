@@ -111,45 +111,6 @@ function normalizeGiveaway(giveaway) {
   };
 }
 
-// ── PASO 2.5: Enriquecer con CheapShark (Metacritic) ──────────
-// Buscamos el juego por nombre para obtener su puntaje
-async function enrichWithMetacritic(games) {
-  console.log(`\n🕵️  Buscando puntajes de Metacritic en CheapShark...`);
-  
-  for (let i = 0; i < games.length; i++) {
-    const game = games[i];
-    // Limpiamos el título (quitamos (Steam) o [PC] y la palabra Giveaway)
-    const cleanTitle = game.title
-      .replace(/\([^)]*\)/g, '')
-      .replace(/\[[^\]]*\]/g, '')
-      .replace(/giveaway/ig, '')
-      .trim();
-    
-    try {
-      const url = `https://www.cheapshark.com/api/1.0/deals?title=${encodeURIComponent(cleanTitle)}&limit=1`;
-      const res = await fetch(url);
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.length > 0 && data[0].metacriticScore && data[0].metacriticScore !== "0") {
-          game.metacritic_score = parseInt(data[0].metacriticScore, 10);
-        } else {
-          game.metacritic_score = null;
-        }
-      } else {
-        game.metacritic_score = null;
-      }
-    } catch (e) {
-      game.metacritic_score = null;
-    }
-    
-    // Delay de 300ms para respetar el rate limit de CheapShark
-    await new Promise(resolve => setTimeout(resolve, 300));
-  }
-  
-  console.log(`✅  Enriquecimiento completado.`);
-  return games;
-}
-
 // ── PASO 3: Guardar en Supabase ───────────────────────────────
 // Usamos upsert con onConflict en claim_url para que si el
 // scraper corre dos veces con el mismo juego, no lo duplique
@@ -223,10 +184,7 @@ async function main() {
     console.log(`✅  Giveaways recibidos: ${rawGiveaways.length}`);
 
     // 2. Normalizar al schema de nuestra BD
-    let normalized = rawGiveaways.map(normalizeGiveaway);
-
-    // 2.5 Enriquecer con Metacritic
-    normalized = await enrichWithMetacritic(normalized);
+    const normalized = rawGiveaways.map(normalizeGiveaway);
 
     // 3. Resumen por tienda
     const byStore = normalized.reduce((acc, g) => {

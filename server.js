@@ -419,7 +419,7 @@ app.get("/api/user/library", verificarToken, async (req, res) => {
         claimed_at,
         games (
           id, title, thumbnail_url, store_name,
-          claim_url, original_price, metacritic_score
+          claim_url, original_price
         )
       `)
       .eq("user_id", req.user.id)
@@ -445,7 +445,7 @@ app.get("/api/user/favorites", verificarToken, async (req, res) => {
         favorited_at,
         games (
           id, title, thumbnail_url, store_name,
-          claim_url, original_price, metacritic_score
+          claim_url, original_price
         )
       `)
       .eq("user_id", req.user.id)
