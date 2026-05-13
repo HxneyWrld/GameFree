@@ -108,6 +108,8 @@ function normalizeGiveaway(giveaway) {
     claim_url      : giveaway.open_giveaway_url,
     original_price : originalPrice,
     expiration_date: expirationDate,
+    description    : giveaway.description || null,
+    instructions   : giveaway.instructions || null,
   };
 }
 

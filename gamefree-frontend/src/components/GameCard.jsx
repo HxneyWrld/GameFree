@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Clock } from "lucide-react";
 
@@ -66,10 +67,8 @@ export default function GameCard({ game, onOptimisticClaim, initialClaimed = fal
   }
 
   return (
-    <a
-      href={game.claim_url}
-      target="_blank"
-      rel="noreferrer"
+    <Link
+      to={`/game/${game.id}`}
       onClick={handleClaimClick}
       className={`block group relative flex flex-col h-full overflow-hidden rounded-xl bg-[#161b22] border border-[#30363d] transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-black/50 hover:border-[#8b949e] cursor-pointer`}
     >
@@ -126,6 +125,6 @@ export default function GameCard({ game, onOptimisticClaim, initialClaimed = fal
         </div>
 
       </div>
-    </a>
+    </Link>
   );
 }

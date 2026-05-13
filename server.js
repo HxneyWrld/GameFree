@@ -309,6 +309,29 @@ app.get("/api/games/free", async (req, res) => {
 });
 
 // ─────────────────────────────────────────────────────────────
+// GAME DETAIL: Obtener detalles de un juego específico
+// GET /api/games/:id
+// ─────────────────────────────────────────────────────────────
+app.get("/api/games/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { data, error } = await supabase
+      .from("games")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      return res.status(404).json({ success: false, message: "Juego no encontrado." });
+    }
+
+    return res.status(200).json({ success: true, data });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: "Error interno del servidor." });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────
 // CLAIMED: Marcar juego como "Ya lo tengo"
 // POST /api/games/:id/claim   → marca como reclamado
 // DELETE /api/games/:id/claim → desmarca

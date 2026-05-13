@@ -12,6 +12,7 @@ import Privacy from "./pages/Privacy";
 import BlogIndex from "./pages/blog/BlogIndex";
 import ComoNoPerderOfertas from "./pages/blog/posts/ComoNoPerderOfertas";
 import MejoresMayo from "./pages/blog/posts/MejoresMayo";
+import GameDetail from "./pages/GameDetail";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
@@ -382,6 +383,7 @@ export default function App() {
         <Route path="/blog" element={<BlogIndex />} />
         <Route path="/blog/como-no-perderte-ofertas-epic" element={<ComoNoPerderOfertas />} />
         <Route path="/blog/mejores-juegos-gratis-mayo-2026" element={<MejoresMayo />} />
+        <Route path="/game/:id" element={<GameDetail />} />
       </Routes>
     </AuthProvider>
   );
