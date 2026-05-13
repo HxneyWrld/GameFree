@@ -354,6 +354,9 @@ function GameFeedApp() {
                   />
                 </li>
               ))}
+            </ul>
+          )}
+
           <footer className="mt-12 text-center text-xs text-[#8b949e] border-t border-[#30363d] pt-8 pb-4">
             <div className="flex justify-center gap-6 mb-3">
               <Link to="/about" className="hover:text-white transition-colors">Acerca de</Link>
