@@ -94,16 +94,16 @@ export default function GameCard({ game, onOptimisticClaim, initialClaimed = fal
         </span>
 
         {/* Metacritic Badge */}
-        {game.metacriticScore && (
+        {game.metacritic_score && (
           <span
             onClick={(e) => e.preventDefault()}
             className={`absolute top-3 right-3 px-2.5 py-1 rounded-md text-xs font-bold shadow-lg backdrop-blur-sm cursor-default text-white ${
-              game.metacriticScore >= 75 ? "bg-emerald-500" :
-              game.metacriticScore >= 50 ? "bg-yellow-500" :
+              game.metacritic_score >= 75 ? "bg-emerald-500" :
+              game.metacritic_score >= 50 ? "bg-yellow-500" :
                                            "bg-rose-500"
             }`}
           >
-            {game.metacriticScore}
+            {game.metacritic_score}
           </span>
         )}
 
