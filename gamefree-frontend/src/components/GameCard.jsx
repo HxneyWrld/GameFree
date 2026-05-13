@@ -66,8 +66,12 @@ export default function GameCard({ game, onOptimisticClaim, initialClaimed = fal
   }
 
   return (
-    <div
-      className={`group relative flex flex-col overflow-hidden rounded-xl bg-[#161b22] border border-[#30363d] transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-black/50 hover:border-[#8b949e]`}
+    <a
+      href={game.claim_url}
+      target="_blank"
+      rel="noreferrer"
+      onClick={handleClaimClick}
+      className={`block group relative flex flex-col h-full overflow-hidden rounded-xl bg-[#161b22] border border-[#30363d] transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-black/50 hover:border-[#8b949e] cursor-pointer`}
     >
       {/* Image Container */}
       <div className="relative aspect-[16/9] overflow-hidden bg-[#0d1117]">
@@ -83,7 +87,8 @@ export default function GameCard({ game, onOptimisticClaim, initialClaimed = fal
         
         {/* Store Badge */}
         <span
-          className={`absolute top-3 left-3 px-2.5 py-1 rounded-md text-xs font-semibold shadow-lg backdrop-blur-sm ${badgeStyle}`}
+          onClick={(e) => e.preventDefault()} // In case user clicks badge
+          className={`absolute top-3 left-3 px-2.5 py-1 rounded-md text-xs font-semibold shadow-lg backdrop-blur-sm ${badgeStyle} cursor-default`}
         >
           {game.store_name}
         </span>
@@ -122,21 +127,17 @@ export default function GameCard({ game, onOptimisticClaim, initialClaimed = fal
 
         {/* Actions */}
         <div className="flex items-center pt-2 mt-auto">
-          <a
-            href={game.claim_url}
-            target="_blank"
-            rel="noreferrer"
-            onClick={handleClaimClick}
+          <div
             className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-semibold py-2.5 rounded-lg transition-colors text-center ${
               claimed 
-                ? "bg-[#21262d] border border-[#30363d] text-emerald-400 hover:bg-[#30363d]" 
-                : "bg-indigo-600 hover:bg-indigo-500 text-white"
+                ? "bg-[#21262d] border border-[#30363d] text-emerald-400 group-hover:bg-[#30363d]" 
+                : "bg-indigo-600 group-hover:bg-indigo-500 text-white"
             }`}
           >
             {claimed ? "En tu Bóveda ✓" : "Obtener y guardar →"}
-          </a>
+          </div>
         </div>
       </div>
-    </div>
+    </a>
   );
 }

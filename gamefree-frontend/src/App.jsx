@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { Routes, Route, Link } from "react-router-dom";
 import GameCard from "./components/GameCard";
 import AuthModal from "./components/AuthModal";
 import Navbar from "./components/Navbar";
 
 import HeroSection from "./components/HeroSection";
 import FilterSidebar from "./components/FilterSidebar";
+import About from "./pages/About";
+import Privacy from "./pages/Privacy";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
@@ -351,7 +354,12 @@ function GameFeedApp() {
             </ul>
           )}
 
-          <footer className="mt-12 text-center text-xs text-gray-600">
+          <footer className="mt-12 text-center text-xs text-[#8b949e] border-t border-[#30363d] pt-8 pb-4">
+            <div className="flex justify-center gap-6 mb-3">
+              <Link to="/about" className="hover:text-white transition-colors">Acerca de</Link>
+              <Link to="/privacy" className="hover:text-white transition-colors">Privacidad</Link>
+              <a href="mailto:contacto@gamefree.store" className="hover:text-white transition-colors">Contacto</a>
+            </div>
             GameFree — Juegos de pago, gratis ahora mismo.
           </footer>
         </div>
@@ -363,7 +371,11 @@ function GameFeedApp() {
 export default function App() {
   return (
     <AuthProvider>
-      <GameFeedApp />
+      <Routes>
+        <Route path="/" element={<GameFeedApp />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/privacy" element={<Privacy />} />
+      </Routes>
     </AuthProvider>
   );
 }
