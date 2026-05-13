@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { Heart } from "lucide-react";
+import { Clock } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
@@ -20,17 +20,46 @@ const STORE_STYLES = {
 export default function GameCard({ game, onOptimisticClaim, initialClaimed = false }) {
   const { token, isLoggedIn, login } = useAuth();
   const [claimed, setClaimed] = useState(initialClaimed);
+  const [timeLeft, setTimeLeft] = useState("");
 
   const badgeStyle = STORE_STYLES[game.store_name] || "bg-[#30363d] text-white";
 
+  useEffect(() => {
+    if (!game.expiration_date) return;
+
+    const calculateTimeLeft = () => {
+      const end = new Date(game.expiration_date).getTime();
+      const now = new Date().getTime();
+      const distance = end - now;
+
+      if (distance < 0) {
+        setTimeLeft("Expirado");
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+
+      if (days > 0) {
+        setTimeLeft(`${days}d ${hours}h ${minutes}m`);
+      } else {
+        setTimeLeft(`${hours}h ${minutes}m`);
+      }
+    };
+
+    calculateTimeLeft();
+    // Update every minute to save resources, but keep it feeling live
+    const intervalId = setInterval(calculateTimeLeft, 60000); 
+
+    return () => clearInterval(intervalId);
+  }, [game.expiration_date]);
+
   function handleClaimClick(e) {
-    // Si ya está reclamado, no hacemos nada extra más que el link por defecto
     if (claimed || !isLoggedIn) return;
 
-    // Marcamos localmente como reclamado
     setClaimed(true);
 
-    // Llamamos al padre para mostrar el Toast y actualizar el ahorro total
     if (onOptimisticClaim) {
       onOptimisticClaim(game);
     }
@@ -70,16 +99,25 @@ export default function GameCard({ game, onOptimisticClaim, initialClaimed = fal
           {game.title}
         </h3>
 
-        {/* Price */}
-        <div className="flex items-center gap-3">
-          {game.original_price > 0 && (
-            <span className="text-sm text-[#8b949e] line-through">
-              ${game.original_price.toFixed(2)}
+        {/* Price & Timer */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-3">
+            {game.original_price > 0 && (
+              <span className="text-sm text-[#8b949e] line-through">
+                ${game.original_price.toFixed(2)}
+              </span>
+            )}
+            <span className="px-2 py-0.5 text-sm font-bold text-emerald-400 bg-emerald-400/10 rounded">
+              GRATIS
             </span>
+          </div>
+
+          {timeLeft && timeLeft !== "Expirado" && (
+            <div className="flex items-center gap-1.5 text-xs font-bold text-rose-400 bg-rose-500/10 w-fit px-2.5 py-1 rounded-full animate-pulse">
+              <Clock className="w-3.5 h-3.5" />
+              <span>Termina en: {timeLeft}</span>
+            </div>
           )}
-          <span className="px-2 py-0.5 text-sm font-bold text-emerald-400 bg-emerald-400/10 rounded">
-            GRATIS
-          </span>
         </div>
 
         {/* Actions */}
