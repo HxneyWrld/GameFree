@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Gamepad2 } from "lucide-react";
 
 export default function About() {
   return (
@@ -10,7 +11,7 @@ export default function About() {
       </div>
       <div className="flex items-center gap-4 mb-8">
         <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-2xl" style={{ background: 'linear-gradient(135deg, var(--neon-purple), var(--neon-green))' }}>
-          🎮
+          <Gamepad2 size={24} color="white" />
         </div>
         <h1 className="text-3xl font-bold text-white">Acerca de GameFree</h1>
       </div>

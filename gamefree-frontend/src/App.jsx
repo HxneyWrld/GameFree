@@ -9,6 +9,9 @@ import HeroSection from "./components/HeroSection";
 import FilterSidebar from "./components/FilterSidebar";
 import About from "./pages/About";
 import Privacy from "./pages/Privacy";
+import BlogIndex from "./pages/blog/BlogIndex";
+import ComoNoPerderOfertas from "./pages/blog/posts/ComoNoPerderOfertas";
+import MejoresMayo from "./pages/blog/posts/MejoresMayo";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
@@ -351,12 +354,10 @@ function GameFeedApp() {
                   />
                 </li>
               ))}
-            </ul>
-          )}
-
           <footer className="mt-12 text-center text-xs text-[#8b949e] border-t border-[#30363d] pt-8 pb-4">
             <div className="flex justify-center gap-6 mb-3">
               <Link to="/about" className="hover:text-white transition-colors">Acerca de</Link>
+              <Link to="/blog" className="hover:text-white transition-colors">Blog</Link>
               <Link to="/privacy" className="hover:text-white transition-colors">Privacidad</Link>
               <a href="mailto:contacto@gamefree.store" className="hover:text-white transition-colors">Contacto</a>
             </div>
@@ -375,6 +376,9 @@ export default function App() {
         <Route path="/" element={<GameFeedApp />} />
         <Route path="/about" element={<About />} />
         <Route path="/privacy" element={<Privacy />} />
+        <Route path="/blog" element={<BlogIndex />} />
+        <Route path="/blog/como-no-perderte-ofertas-epic" element={<ComoNoPerderOfertas />} />
+        <Route path="/blog/mejores-juegos-gratis-mayo-2026" element={<MejoresMayo />} />
       </Routes>
     </AuthProvider>
   );

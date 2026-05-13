@@ -125,18 +125,6 @@ export default function GameCard({ game, onOptimisticClaim, initialClaimed = fal
           )}
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center pt-2 mt-auto">
-          <div
-            className={`flex-1 flex items-center justify-center gap-1.5 text-sm font-semibold py-2.5 rounded-lg transition-colors text-center ${
-              claimed 
-                ? "bg-[#21262d] border border-[#30363d] text-emerald-400 group-hover:bg-[#30363d]" 
-                : "bg-indigo-600 group-hover:bg-indigo-500 text-white"
-            }`}
-          >
-            {claimed ? "En tu Bóveda ✓" : "Obtener y guardar →"}
-          </div>
-        </div>
       </div>
     </a>
   );
