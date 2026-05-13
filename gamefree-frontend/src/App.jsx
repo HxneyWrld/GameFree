@@ -119,6 +119,7 @@ function GameFeedApp() {
   // ── Filters Logic ────────────────────────────────────────────────────────
   const [selectedStores, setSelectedStores] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState([]);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
   const storeCounts = games.reduce((acc, g) => {
     acc[g.store_name] = (acc[g.store_name] || 0) + 1;
@@ -181,17 +182,31 @@ function GameFeedApp() {
       {/* ── Contenido ──────────────────────────────────────── */}
       <main id="games-grid" className="max-w-7xl mx-auto px-4 py-10 flex flex-col md:flex-row gap-8">
         
-        {/* Sidebar */}
-        <div className="w-full md:w-64 flex-shrink-0 hidden md:block">
-          <FilterSidebar 
-            storeOptions={storeOptions}
-            selectedStores={selectedStores}
-            onStoreToggle={handleStoreToggle}
-            statusOptions={statusOptions}
-            selectedStatus={selectedStatus}
-            onStatusToggle={handleStatusToggle}
-            onClearAll={handleClearAll}
+        {/* Sidebar Responsive Drawer */}
+        <div className={`fixed inset-0 z-40 transition-opacity md:static md:z-auto ${isMobileFilterOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none md:opacity-100 md:pointer-events-auto'}`}>
+          {/* Overlay oscuro en móvil */}
+          <div 
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm md:hidden" 
+            onClick={() => setIsMobileFilterOpen(false)}
           />
+          
+          {/* Contenedor del Sidebar */}
+          <div className={`absolute left-0 top-0 bottom-0 w-[280px] max-w-[80vw] bg-[#0d1117] p-4 transform transition-transform md:static md:w-64 md:p-0 md:bg-transparent md:transform-none ${isMobileFilterOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+            <div className="flex items-center justify-between mb-4 md:hidden">
+              <span className="font-semibold text-white">Menú de Filtros</span>
+              <button onClick={() => setIsMobileFilterOpen(false)} className="text-gray-400 hover:text-white text-xl px-2">✕</button>
+            </div>
+            
+            <FilterSidebar 
+              storeOptions={storeOptions}
+              selectedStores={selectedStores}
+              onStoreToggle={handleStoreToggle}
+              statusOptions={statusOptions}
+              selectedStatus={selectedStatus}
+              onStatusToggle={handleStatusToggle}
+              onClearAll={handleClearAll}
+            />
+          </div>
         </div>
 
         {/* Main Grid Area */}
@@ -204,9 +219,12 @@ function GameFeedApp() {
               </span>
               <div className="md:hidden">
                 <button 
-                  className="text-xs bg-[#27272a] text-white px-3 py-1.5 rounded-lg border border-[#3f3f46]"
-                  onClick={() => alert("Los filtros móviles aún no están implementados.")}
+                  className="text-xs bg-[#27272a] text-white px-4 py-2 rounded-lg border border-[#3f3f46] flex items-center gap-2 hover:bg-[#3f3f46] transition-colors"
+                  onClick={() => setIsMobileFilterOpen(true)}
                 >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                  </svg>
                   Filtros
                 </button>
               </div>

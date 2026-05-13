@@ -25,20 +25,20 @@ export default function HeroSection({ onExplore }) {
       />
 
       {/* Floating gaming icons - decorative */}
-      <div className="absolute top-20 left-[15%] animate-pulse opacity-20">
-        <Gamepad2 className="h-16 w-16 text-indigo-500" />
+      <div className="absolute top-24 left-[5%] md:left-[15%] animate-pulse opacity-10 md:opacity-20">
+        <Gamepad2 className="h-12 w-12 md:h-16 md:w-16 text-indigo-500" />
       </div>
       <div
-        className="absolute bottom-32 right-[20%] animate-pulse opacity-20"
+        className="absolute bottom-40 right-[10%] md:right-[20%] animate-pulse opacity-10 md:opacity-20"
         style={{ animationDelay: "1s" }}
       >
-        <Flame className="h-12 w-12 text-indigo-500" />
+        <Flame className="h-10 w-10 md:h-12 md:w-12 text-indigo-500" />
       </div>
       <div
-        className="absolute top-1/3 right-[10%] animate-pulse opacity-20"
+        className="absolute top-1/3 right-[5%] md:right-[10%] animate-pulse opacity-10 md:opacity-20"
         style={{ animationDelay: "0.5s" }}
       >
-        <Zap className="h-10 w-10 text-indigo-500" />
+        <Zap className="h-8 w-8 md:h-10 md:w-10 text-indigo-500" />
       </div>
 
       {/* Main content */}
