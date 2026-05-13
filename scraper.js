@@ -118,11 +118,15 @@ async function enrichWithMetacritic(games) {
   
   for (let i = 0; i < games.length; i++) {
     const game = games[i];
-    // Limpiamos el título (quitamos (Steam) o [PC] para mejor match)
-    const cleanTitle = game.title.replace(/\([^)]*\)/g, '').replace(/\[[^\]]*\]/g, '').trim();
+    // Limpiamos el título (quitamos (Steam) o [PC] y la palabra Giveaway)
+    const cleanTitle = game.title
+      .replace(/\([^)]*\)/g, '')
+      .replace(/\[[^\]]*\]/g, '')
+      .replace(/giveaway/ig, '')
+      .trim();
     
     try {
-      const url = `https://www.cheapshark.com/api/1.0/games?title=${encodeURIComponent(cleanTitle)}&limit=1`;
+      const url = `https://www.cheapshark.com/api/1.0/deals?title=${encodeURIComponent(cleanTitle)}&limit=1`;
       const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
