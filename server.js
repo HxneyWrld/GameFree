@@ -123,21 +123,54 @@ function supabaseAs(token) {
 // ─────────────────────────────────────────────────────────────
 app.post("/api/auth/register", async (req, res) => {
   const { email, password } = req.body;
-
+  
   if (!email || !password) {
-    return res.status(400).json({ success: false, message: "Email y contraseña requeridos." });
+    return res.status(400).json({ success: false, message: "El correo y la contraseña son obligatorios." });
   }
 
-  const { data, error } = await supabase.auth.signUp({ email, password });
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ success: false, message: "El formato del correo no es válido." });
+  }
+
+  if (password.length < 8) {
+    return res.status(400).json({ success: false, message: "La contraseña debe tener al menos 8 caracteres." });
+  }
+
+  if (password.length > 64) {
+    return res.status(400).json({ success: false, message: "La contraseña no debe exceder los 64 caracteres." });
+  }
+
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
+  if (!passwordRegex.test(password)) {
+    return res.status(400).json({ success: false, message: "La contraseña debe tener al menos una mayúscula, una minúscula y un número." });
+  }
+
+  const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  
+  const { data, error } = await db.auth.signUp({ 
+    email, 
+    password,
+    options: {
+      emailRedirectTo: "https://gamefree.store"
+    }
+  });
 
   if (error) {
+    if (error.message.includes("already registered") || error.status === 422) {
+      return res.status(409).json({ success: false, message: "Este correo ya tiene una cuenta registrada." });
+    }
     return res.status(400).json({ success: false, message: error.message });
+  }
+
+  if (data.user && data.user.identities && data.user.identities.length === 0) {
+    return res.status(409).json({ success: false, message: "Este correo ya tiene una cuenta registrada." });
   }
 
   return res.status(201).json({
     success: true,
-    message: "Usuario registrado. Revisá tu email para confirmar la cuenta.",
-    user: { id: data.user.id, email: data.user.email },
+    message: "Cuenta creada. Revisa tu correo para confirmarla.",
+    user: { id: data.user.id, email: data.user.email }
   });
 });
 
