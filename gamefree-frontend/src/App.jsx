@@ -10,7 +10,7 @@ import FilterSidebar from "./components/FilterSidebar";
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
 function GameFeedApp() {
-  const { user, token, isLoggedIn, logout } = useAuth();
+  const { user, token, isLoggedIn, login, logout } = useAuth();
   const [games,        setGames]        = useState([]);
   const [loading,      setLoading]      = useState(true);
   const [error,        setError]        = useState(null);
@@ -23,15 +23,31 @@ function GameFeedApp() {
 
   useEffect(() => {
     const hash = window.location.hash;
-    if (hash && hash.includes("type=recovery")) {
+    if (!hash) return;
+
+    if (hash.includes("access_token")) {
       const params = new URLSearchParams(hash.substring(1));
+      const type = params.get("type");
       const accessToken = params.get("access_token");
       const refreshToken = params.get("refresh_token");
-      if (accessToken && refreshToken) {
-        setResetToken({ access_token: accessToken, refresh_token: refreshToken });
-        setAuthMode("reset");
-        setShowModal(true);
+
+      if (accessToken) {
+        // Limpiamos la URL inmediatamente para que el token no quede visible
         window.history.replaceState(null, "", window.location.pathname);
+
+        if (type === "recovery") {
+          setResetToken({ access_token: accessToken, refresh_token: refreshToken });
+          setAuthMode("reset");
+          setShowModal(true);
+        } else if (type === "signup" || type === "magiclink") {
+          // Extraemos los datos del JWT localmente
+          try {
+            const payload = JSON.parse(atob(accessToken.split('.')[1]));
+            login({ id: payload.sub, email: payload.email }, accessToken);
+          } catch (e) {
+            console.error("No se pudo decodificar el token de inicio de sesión", e);
+          }
+        }
       }
     }
   }, []);
