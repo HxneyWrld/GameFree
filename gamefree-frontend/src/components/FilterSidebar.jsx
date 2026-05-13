@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import AdBanner from "./AdBanner";
 
 function CustomCheckbox({ checked, onChange, label, count }) {
   return (
@@ -109,10 +110,15 @@ export default function FilterSidebar({
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-[#27272a] bg-[#18181b] rounded-b-xl">
+      <div className="p-4 border-t border-[#27272a] bg-[#18181b]">
         <p className="text-xs text-[#71717a] text-center">
           Mostrando {totalFilters > 0 ? "filtros activos" : "todos los juegos"}
         </p>
+      </div>
+
+      {/* AdSense Unit */}
+      <div className="px-4 pb-4">
+        <AdBanner adSlot="6965792817" />
       </div>
     </aside>
   );
