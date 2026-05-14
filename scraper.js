@@ -13,6 +13,7 @@
  */
 
 import { createClient } from "@supabase/supabase-js";
+import translate from "google-translate-api-x";
 import "dotenv/config";
 
 // ── Cliente Supabase ──────────────────────────────────────────
@@ -113,6 +114,30 @@ function normalizeGiveaway(giveaway) {
   };
 }
 
+// ── PASO 2.5: Traducir textos ─────────────────────────────────
+async function translateGiveaways(games) {
+  console.log(`\n🌍  Traduciendo ${games.length} juegos al español neutro...`);
+  for (let i = 0; i < games.length; i++) {
+    const game = games[i];
+    try {
+      if (game.description) {
+        const resDesc = await translate(game.description, { to: 'es' });
+        game.description = resDesc.text;
+      }
+      if (game.instructions) {
+        const resInst = await translate(game.instructions, { to: 'es' });
+        game.instructions = resInst.text;
+      }
+    } catch (e) {
+      console.log(`⚠️  Error traduciendo "${game.title}":`, e.message);
+    }
+    // Pequeña pausa para no saturar la API de Google Translate
+    await new Promise(resolve => setTimeout(resolve, 300));
+  }
+  console.log(`✅  Traducción completada.`);
+  return games;
+}
+
 // ── PASO 3: Guardar en Supabase ───────────────────────────────
 // Usamos upsert con onConflict en claim_url para que si el
 // scraper corre dos veces con el mismo juego, no lo duplique
@@ -186,7 +211,10 @@ async function main() {
     console.log(`✅  Giveaways recibidos: ${rawGiveaways.length}`);
 
     // 2. Normalizar al schema de nuestra BD
-    const normalized = rawGiveaways.map(normalizeGiveaway);
+    let normalized = rawGiveaways.map(normalizeGiveaway);
+
+    // 2.5. Traducir al español
+    normalized = await translateGiveaways(normalized);
 
     // 3. Resumen por tienda
     const byStore = normalized.reduce((acc, g) => {
