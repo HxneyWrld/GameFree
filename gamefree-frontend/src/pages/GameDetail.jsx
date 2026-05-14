@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Clock, ExternalLink, Gamepad2, Info, AlertCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function GameDetail() {
   const { id } = useParams();
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { t, i18n } = useTranslation();
 
   // Expiration countdown logic
   const [timeLeft, setTimeLeft] = useState("");
@@ -39,7 +41,7 @@ export default function GameDetail() {
       const diff = expiration - now;
 
       if (diff <= 0) {
-        setTimeLeft("¡Expirado!");
+        setTimeLeft(t('game.expired'));
         return;
       }
 
@@ -47,7 +49,8 @@ export default function GameDetail() {
       const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
       const minutes = Math.floor((diff / 1000 / 60) % 60);
 
-      setTimeLeft(`${days > 0 ? `${days}d ` : ""}${hours}h ${minutes}m restantes`);
+      const timeStr = `${days > 0 ? `${days}d ` : ""}${hours}h ${minutes}m`;
+      setTimeLeft(i18n.language.startsWith('es') ? `${timeStr} restantes` : `${timeStr} remaining`);
     };
 
     calculateTimeLeft();
@@ -67,14 +70,19 @@ export default function GameDetail() {
     return (
       <div className="flex-1 flex flex-col items-center justify-center h-screen text-center px-4">
         <AlertCircle className="w-16 h-16 text-rose-500 mb-4" />
-        <h2 className="text-2xl font-bold text-white mb-2">Juego no encontrado</h2>
-        <p className="text-gray-400 mb-6">{error || "El juego no existe o ha expirado."}</p>
+        <h2 className="text-2xl font-bold text-white mb-2">{t('game.expired')}</h2>
+        <p className="text-gray-400 mb-6">{error || t('game.expired')}</p>
         <Link to="/" className="px-6 py-3 bg-[#1f2937] text-white rounded-xl hover:bg-[#374151] transition-colors font-semibold">
-          Volver al Feed
+          {t('nav.feed')}
         </Link>
       </div>
     );
   }
+
+  // Choose the right language for description and instructions
+  const isEn = i18n.language.startsWith('en');
+  const description = isEn ? (game.description_en || game.description_es) : (game.description_es || game.description_en);
+  const instructions = isEn ? (game.instructions_en || game.instructions_es) : (game.instructions_es || game.instructions_en);
 
   // Parse HTML tags out of description/instructions if GamerPower sends raw HTML
   // (Usually they send plain text with basic line breaks, but just in case)
@@ -110,7 +118,7 @@ export default function GameDetail() {
             <div className="flex-1 z-10 w-full">
               <Link to="/" className="inline-flex items-center text-gray-400 hover:text-white transition-colors mb-4 bg-black/40 px-3 py-1.5 rounded-full text-sm backdrop-blur-md">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Volver
+                {t('nav.about')}
               </Link>
               
               <div className="flex flex-wrap items-center gap-3 mb-2">
@@ -123,7 +131,7 @@ export default function GameDetail() {
                   </span>
                 )}
                 <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-xs font-bold border border-emerald-500/30">
-                  GRATIS
+                  {t('game.free')}
                 </span>
               </div>
               
@@ -140,7 +148,7 @@ export default function GameDetail() {
                   className="inline-flex justify-center items-center px-8 py-3.5 bg-emerald-600 text-white rounded-xl hover:bg-emerald-500 transition-colors font-bold text-lg shadow-lg shadow-emerald-900/50"
                 >
                   <Gamepad2 className="w-5 h-5 mr-2" />
-                  Reclamar Ahora
+                  {t('game.claim')}
                 </a>
                 
                 {game.expiration_date && (
@@ -163,20 +171,20 @@ export default function GameDetail() {
           <section className="bg-[#161b22] p-6 sm:p-8 rounded-2xl border border-white/5 shadow-xl">
             <h2 className="text-xl font-bold text-white mb-4 flex items-center">
               <Info className="w-5 h-5 mr-2 text-emerald-500" />
-              Acerca de este juego
+              {t('game.about')}
             </h2>
             <div className="text-gray-300 leading-relaxed space-y-4">
-              {formatText(game.description)}
+              {formatText(description)}
             </div>
           </section>
 
           <section className="bg-[#161b22] p-6 sm:p-8 rounded-2xl border border-white/5 shadow-xl">
             <h2 className="text-xl font-bold text-white mb-4 flex items-center">
               <AlertCircle className="w-5 h-5 mr-2 text-emerald-500" />
-              Instrucciones
+              {t('game.instructions')}
             </h2>
             <div className="text-gray-300 leading-relaxed bg-[#0d1117] p-5 rounded-xl border border-white/5">
-              {formatText(game.instructions)}
+              {formatText(instructions)}
             </div>
           </section>
         </div>
@@ -184,16 +192,16 @@ export default function GameDetail() {
         {/* Sidebar */}
         <div className="space-y-6">
           <div className="bg-[#161b22] p-6 rounded-2xl border border-white/5 shadow-xl">
-            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Detalles de la Oferta</h3>
+            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">{t('game.details')}</h3>
             
             <div className="space-y-4">
               <div>
-                <span className="block text-xs text-gray-500 mb-1">Plataforma / Tienda</span>
+                <span className="block text-xs text-gray-500 mb-1">{t('game.platform')}</span>
                 <span className="font-medium text-white">{game.store_name}</span>
               </div>
               
               <div>
-                <span className="block text-xs text-gray-500 mb-1">Precio Habitual</span>
+                <span className="block text-xs text-gray-500 mb-1">{t('game.price')}</span>
                 <span className="font-medium text-white">
                   {game.original_price > 0 ? `$${game.original_price}` : "Free to Play"}
                 </span>
@@ -201,9 +209,9 @@ export default function GameDetail() {
               
               {game.expiration_date && (
                 <div>
-                  <span className="block text-xs text-gray-500 mb-1">Expira el</span>
+                  <span className="block text-xs text-gray-500 mb-1">{t('game.expires')}</span>
                   <span className="font-medium text-rose-400">
-                    {new Date(game.expiration_date).toLocaleString('es-ES', { 
+                    {new Date(game.expiration_date).toLocaleString(i18n.language.startsWith('es') ? 'es-ES' : 'en-US', { 
                       dateStyle: 'long', 
                       timeStyle: 'short' 
                     })}
@@ -219,7 +227,7 @@ export default function GameDetail() {
             rel="noreferrer"
             className="w-full flex items-center justify-center p-4 bg-[#1f2937] hover:bg-[#374151] rounded-xl text-white font-medium transition-colors border border-white/5"
           >
-            Ir a la tienda oficial
+            {t('game.official')}
             <ExternalLink className="w-4 h-4 ml-2 text-gray-400" />
           </a>
         </div>

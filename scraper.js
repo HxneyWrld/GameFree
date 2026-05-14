@@ -109,8 +109,10 @@ function normalizeGiveaway(giveaway) {
     claim_url      : giveaway.open_giveaway_url,
     original_price : originalPrice,
     expiration_date: expirationDate,
-    description    : giveaway.description || null,
-    instructions   : giveaway.instructions || null,
+    description_en : giveaway.description || null,
+    instructions_en: giveaway.instructions || null,
+    description_es : null,
+    instructions_es: null,
   };
 }
 
@@ -120,18 +122,17 @@ async function translateGiveaways(games) {
   for (let i = 0; i < games.length; i++) {
     const game = games[i];
     try {
-      if (game.description) {
-        const resDesc = await translate(game.description, { to: 'es' });
-        game.description = resDesc.text;
+      if (game.description_en) {
+        const resDesc = await translate(game.description_en, { to: 'es' });
+        game.description_es = resDesc.text;
       }
-      if (game.instructions) {
-        const resInst = await translate(game.instructions, { to: 'es' });
-        game.instructions = resInst.text;
+      if (game.instructions_en) {
+        const resInst = await translate(game.instructions_en, { to: 'es' });
+        game.instructions_es = resInst.text;
       }
     } catch (e) {
       console.log(`⚠️  Error traduciendo "${game.title}":`, e.message);
     }
-    // Pequeña pausa para no saturar la API de Google Translate
     await new Promise(resolve => setTimeout(resolve, 300));
   }
   console.log(`✅  Traducción completada.`);

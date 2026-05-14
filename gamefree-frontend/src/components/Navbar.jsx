@@ -1,15 +1,21 @@
-import { useState } from "react";
-import { Gamepad2, Flame, Wallet, Menu, X, LogIn, LogOut } from "lucide-react";
+import { Gamepad2, Flame, Wallet, Menu, X, LogIn, LogOut, Languages } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { useTranslation } from "react-i18next";
 
 const navLinks = [
-  { key: "feed",      label: "Feed de Ofertas", icon: Flame },
-  { key: "library",   label: "Mi Bóveda",       icon: Wallet },
+  { key: "feed",      labelKey: "nav.feed", icon: Flame },
+  { key: "library",   labelKey: "nav.vault", icon: Wallet },
 ];
 
 export default function Navbar({ activeTab, onTabChange, onOpenAuth }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isLoggedIn, user, logout } = useAuth();
+  const { t, i18n } = useTranslation();
+
+  const toggleLanguage = () => {
+    const newLang = i18n.language.startsWith('es') ? 'en' : 'es';
+    i18n.changeLanguage(newLang);
+  };
 
   const handleNavClick = (key) => {
     onTabChange(key);
@@ -35,7 +41,7 @@ export default function Navbar({ activeTab, onTabChange, onOpenAuth }) {
 
         {/* Nav desktop */}
         <div className="navbar-links">
-          {navLinks.map(({ key, label, icon: Icon }) => {
+          {navLinks.map(({ key, labelKey, icon: Icon }) => {
             if (!isLoggedIn && key !== "feed") return null;
             return (
               <button
@@ -44,7 +50,7 @@ export default function Navbar({ activeTab, onTabChange, onOpenAuth }) {
                 className={`navbar-link ${activeTab === key ? "navbar-link--active" : ""}`}
               >
                 <Icon size={16} className="navbar-link-icon" />
-                <span>{label}</span>
+                <span>{t(labelKey)}</span>
                 <span className="navbar-link-underline" />
               </button>
             );
@@ -53,6 +59,12 @@ export default function Navbar({ activeTab, onTabChange, onOpenAuth }) {
 
         {/* Auth desktop */}
         <div className="navbar-auth">
+          {/* Selector de Idioma */}
+          <button className="navbar-btn-lang" onClick={toggleLanguage} title={i18n.language.startsWith('es') ? "Switch to English" : "Cambiar a Español"}>
+            <Languages size={18} />
+            <span>{i18n.language.startsWith('es') ? 'EN' : 'ES'}</span>
+          </button>
+
           {isLoggedIn ? (
             <>
               <span className="navbar-username">
@@ -60,7 +72,7 @@ export default function Navbar({ activeTab, onTabChange, onOpenAuth }) {
               </span>
               <button className="navbar-btn-outline" onClick={logout}>
                 <LogOut size={15} />
-                Salir
+                {t('nav.logout')}
               </button>
             </>
           ) : (
@@ -68,7 +80,7 @@ export default function Navbar({ activeTab, onTabChange, onOpenAuth }) {
               <span className="navbar-btn-shimmer" />
               <span className="navbar-btn-content">
                 <LogIn size={16} />
-                Iniciar Sesión
+                {t('nav.login')}
               </span>
             </button>
           )}
@@ -94,7 +106,7 @@ export default function Navbar({ activeTab, onTabChange, onOpenAuth }) {
       {/* Menú mobile */}
       <div className={`navbar-mobile-menu ${isMenuOpen ? "navbar-mobile-menu--open" : ""}`}>
         <div className="navbar-mobile-links">
-          {navLinks.map(({ key, label, icon: Icon }, index) => {
+          {navLinks.map(({ key, labelKey, icon: Icon }, index) => {
             if (!isLoggedIn && key !== "feed") return null;
             return (
               <button
@@ -104,19 +116,24 @@ export default function Navbar({ activeTab, onTabChange, onOpenAuth }) {
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 <Icon size={18} className="navbar-link-icon" />
-                <span>{label}</span>
+                <span>{t(labelKey)}</span>
               </button>
             );
           })}
 
           <div className="navbar-mobile-auth">
+            <button className="navbar-mobile-link" onClick={toggleLanguage}>
+              <Languages size={18} className="navbar-link-icon" />
+              <span>{i18n.language.startsWith('es') ? 'Switch to English' : 'Cambiar a Español'}</span>
+            </button>
+
             {isLoggedIn ? (
               <button
                 className="navbar-btn-outline navbar-btn--full"
                 onClick={() => { logout(); setIsMenuOpen(false); }}
               >
                 <LogOut size={15} />
-                Salir ({user?.email?.split("@")[0]})
+                {t('nav.logout')} ({user?.email?.split("@")[0]})
               </button>
             ) : (
               <button
@@ -124,7 +141,7 @@ export default function Navbar({ activeTab, onTabChange, onOpenAuth }) {
                 onClick={() => { onOpenAuth(); setIsMenuOpen(false); }}
               >
                 <LogIn size={15} />
-                Iniciar Sesión / Registrarse
+                {t('auth.login')} / {t('auth.register')}
               </button>
             )}
           </div>

@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Clock } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
@@ -20,6 +19,7 @@ const STORE_STYLES = {
 
 export default function GameCard({ game, onOptimisticClaim, initialClaimed = false }) {
   const { token, isLoggedIn, login } = useAuth();
+  const { t, i18n } = useTranslation();
   const [claimed, setClaimed] = useState(initialClaimed);
   const [timeLeft, setTimeLeft] = useState("");
 
@@ -34,7 +34,7 @@ export default function GameCard({ game, onOptimisticClaim, initialClaimed = fal
       const distance = end - now;
 
       if (distance < 0) {
-        setTimeLeft("Expirado");
+        setTimeLeft(t('game.expired'));
         return;
       }
 
@@ -112,14 +112,14 @@ export default function GameCard({ game, onOptimisticClaim, initialClaimed = fal
               </span>
             )}
             <span className="px-2 py-0.5 text-sm font-bold text-emerald-400 bg-emerald-400/10 rounded">
-              GRATIS
+              {t('game.free')}
             </span>
           </div>
 
-          {timeLeft && timeLeft !== "Expirado" && (
+          {timeLeft && timeLeft !== t('game.expired') && (
             <div className="flex items-center gap-1.5 text-xs font-bold text-rose-400 bg-rose-500/10 w-fit px-2.5 py-1 rounded-full animate-pulse">
               <Clock className="w-3.5 h-3.5" />
-              <span>Termina en: {timeLeft}</span>
+              <span>{t('game.ends')}: {timeLeft}</span>
             </div>
           )}
         </div>

@@ -57,3 +57,4 @@ El proyecto está preparado para la monetización pasiva a través de Google AdS
 ## 7. Próximos Pasos (Roadmap)
 - Integración de notificaciones automáticas vía email (Notificar a los usuarios de "Su Bóveda" cuando un juego nuevo esté gratis).
 - Escalabilidad del scraper (`scraper.js`) para capturar precios en distintas monedas y evitar desincronización de tiempos de finalización.
+
