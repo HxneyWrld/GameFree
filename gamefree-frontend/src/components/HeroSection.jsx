@@ -2,7 +2,7 @@ import { Gamepad2, Flame, Zap } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export default function HeroSection({ onExplore }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0d1117]">
       {/* Background grid pattern */}

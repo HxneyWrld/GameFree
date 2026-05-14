@@ -47,7 +47,7 @@ export default function FilterSidebar({
   onStatusToggle,
   onClearAll 
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const totalFilters = selectedStores.length + selectedStatus.length;
 
   return (
