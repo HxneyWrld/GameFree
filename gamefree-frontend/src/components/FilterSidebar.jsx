@@ -1,5 +1,6 @@
 import { Check } from "lucide-react";
 import AdBanner from "./AdBanner";
+import { useTranslation } from "react-i18next";
 
 function CustomCheckbox({ checked, onChange, label, count }) {
   return (
@@ -46,6 +47,7 @@ export default function FilterSidebar({
   onStatusToggle,
   onClearAll 
 }) {
+  const { t } = useTranslation();
   const totalFilters = selectedStores.length + selectedStatus.length;
 
   return (
@@ -54,14 +56,14 @@ export default function FilterSidebar({
       <div className="p-4 border-b border-[#27272a]">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-white uppercase tracking-wider">
-            Filtros
+            {t('filters.title')}
           </h2>
           {totalFilters > 0 && (
             <button 
               onClick={onClearAll}
               className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer"
             >
-              Limpiar ({totalFilters})
+              {t('filters.clear')} ({totalFilters})
             </button>
           )}
         </div>
@@ -72,7 +74,7 @@ export default function FilterSidebar({
         {/* Tiendas Section */}
         <section className="p-4 border-b border-[#27272a]/50">
           <h3 className="text-xs font-medium text-[#71717a] uppercase tracking-wider mb-3">
-            Tiendas
+            {t('filters.stores')}
           </h3>
           <div className="space-y-0.5">
             {storeOptions.length === 0 && (
@@ -93,7 +95,7 @@ export default function FilterSidebar({
         {/* Estado Section */}
         <section className="p-4 border-b border-[#27272a]/50">
           <h3 className="text-xs font-medium text-[#71717a] uppercase tracking-wider mb-3">
-            Estado
+            {t('filters.status')}
           </h3>
           <div className="space-y-0.5">
             {statusOptions.map(option => (
@@ -112,7 +114,9 @@ export default function FilterSidebar({
       {/* Footer */}
       <div className="p-4 border-t border-[#27272a] bg-[#18181b]">
         <p className="text-xs text-[#71717a] text-center">
-          Mostrando {totalFilters > 0 ? "filtros activos" : "todos los juegos"}
+          {totalFilters > 0 
+            ? (i18n.language.startsWith('es') ? "Mostrando filtros activos" : "Showing active filters") 
+            : (i18n.language.startsWith('es') ? "Mostrando todos los juegos" : "Showing all games")}
         </p>
       </div>
 

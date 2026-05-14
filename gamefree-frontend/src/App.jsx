@@ -13,11 +13,13 @@ import BlogIndex from "./pages/blog/BlogIndex";
 import ComoNoPerderOfertas from "./pages/blog/posts/ComoNoPerderOfertas";
 import MejoresMayo from "./pages/blog/posts/MejoresMayo";
 import GameDetail from "./pages/GameDetail";
+import { useTranslation } from "react-i18next";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
 function GameFeedApp() {
   const { user, token, isLoggedIn, login, logout } = useAuth();
+  const { t, i18n } = useTranslation();
   const [games,        setGames]        = useState([]);
   const [loading,      setLoading]      = useState(true);
   const [error,        setError]        = useState(null);
@@ -118,7 +120,10 @@ function GameFeedApp() {
     setClaimedIds(prev => new Set([...prev, game.id]));
     
     const priceToSave = game.original_price > 0 ? game.original_price.toFixed(2) : "0.00";
-    setToastMessage(`¡Redirigiendo a la tienda! Sumamos $${priceToSave} a tu ahorro total.`);
+    const msg = i18n.language.startsWith('es') 
+      ? `¡Redirigiendo a la tienda! Sumamos $${priceToSave} a tu ahorro total.` 
+      : `Redirecting to store! Added $${priceToSave} to your total savings.`;
+    setToastMessage(msg);
     
     // Ocultar toast después de 4 segundos
     setTimeout(() => setToastMessage(null), 4000);
@@ -152,7 +157,7 @@ function GameFeedApp() {
   })).sort((a, b) => b.count - a.count);
 
   const statusOptions = [
-    { id: "active", label: "Activos", count: games.length }
+    { id: "active", label: i18n.language.startsWith('es') ? "Activos" : "Active", count: games.length }
   ];
 
   const handleStoreToggle = (storeId) => {
@@ -227,7 +232,7 @@ function GameFeedApp() {
           />
           <div className={`absolute left-0 top-0 bottom-0 w-[280px] max-w-[80vw] bg-[#0d1117] p-4 transform transition-transform md:static md:w-64 md:p-0 md:bg-transparent md:transform-none ${isMobileFilterOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
             <div className="flex items-center justify-between mb-4 md:hidden">
-              <span className="font-semibold text-white">Menú de Filtros</span>
+              <span className="font-semibold text-white">{i18n.language.startsWith('es') ? 'Menú de Filtros' : 'Filter Menu'}</span>
               <button onClick={() => setIsMobileFilterOpen(false)} className="text-gray-400 hover:text-white text-xl px-2">✕</button>
             </div>
             
@@ -250,11 +255,11 @@ function GameFeedApp() {
           {tab === "library" && !loading && !error && (
             <div className="mb-8 p-6 rounded-2xl bg-gradient-to-br from-indigo-900/40 to-purple-900/20 border border-indigo-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
-                <h2 className="text-2xl font-bold text-white mb-1">Mi Bóveda de Ahorros</h2>
-                <p className="text-indigo-200 text-sm">Historial de juegos que has reclamado gratis.</p>
+                <h2 className="text-2xl font-bold text-white mb-1">{i18n.language.startsWith('es') ? 'Mi Bóveda de Ahorros' : 'My Savings Vault'}</h2>
+                <p className="text-indigo-200 text-sm">{i18n.language.startsWith('es') ? 'Historial de juegos que has reclamado gratis.' : 'History of games you have claimed for free.'}</p>
               </div>
               <div className="text-right">
-                <p className="text-sm text-indigo-300 font-medium mb-1">Has ahorrado un total de</p>
+                <p className="text-sm text-indigo-300 font-medium mb-1">{i18n.language.startsWith('es') ? 'Has ahorrado un total de' : 'You have saved a total of'}</p>
                 <p className="text-4xl font-black text-emerald-400 drop-shadow-md">
                   ${totalSavings.toFixed(2)}
                 </p>
@@ -272,7 +277,7 @@ function GameFeedApp() {
               </div>
               <input
                 type="text"
-                placeholder={tab === "feed" ? "Buscar juegos por nombre..." : "Buscar en tu bóveda..."}
+                placeholder={tab === "feed" ? t('filters.search') : (i18n.language.startsWith('es') ? "Buscar en tu bóveda..." : "Search in your vault...")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-[#161b22] border border-[#30363d] text-white rounded-xl pl-11 pr-4 py-3.5 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors placeholder-[#8b949e] shadow-sm"
@@ -284,7 +289,9 @@ function GameFeedApp() {
           {!loading && !error && filteredGames.length > 0 && (
             <div className="mb-6 flex items-center justify-between">
               <span className="inline-flex items-center gap-1.5 text-xs font-medium bg-indigo-900/30 text-indigo-300 border border-indigo-700/40 px-3 py-1 rounded-full">
-                🎮 {filteredGames.length} {filteredGames.length === 1 ? "juego disponible" : "juegos disponibles"}
+                🎮 {filteredGames.length} {i18n.language.startsWith('es') 
+                  ? (filteredGames.length === 1 ? "juego disponible" : "juegos disponibles")
+                  : (filteredGames.length === 1 ? "game available" : "games available")}
               </span>
               <div className="md:hidden">
                 <button 
@@ -294,7 +301,7 @@ function GameFeedApp() {
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                   </svg>
-                  Filtros
+                  {t('filters.title')}
                 </button>
               </div>
             </div>
@@ -304,7 +311,7 @@ function GameFeedApp() {
           {loading && (
             <div className="flex flex-col items-center gap-4 py-20 text-gray-500">
               <div className="w-10 h-10 border-4 border-gray-700 border-t-indigo-500 rounded-full animate-spin" />
-              <p className="text-sm">Cargando juegos...</p>
+              <p className="text-sm">{i18n.language.startsWith('es') ? 'Cargando juegos...' : 'Loading games...'}</p>
             </div>
           )}
 
@@ -314,7 +321,7 @@ function GameFeedApp() {
               <span className="text-4xl">⚠️</span>
               <p className="text-sm text-gray-500">{error}</p>
               <button onClick={loadData} className="text-sm bg-indigo-600 text-white px-4 py-2 rounded-lg">
-                Reintentar
+                {i18n.language.startsWith('es') ? 'Reintentar' : 'Retry'}
               </button>
             </div>
           )}
@@ -323,9 +330,9 @@ function GameFeedApp() {
           {!loading && !error && games.length === 0 && (
             <div className="flex flex-col items-center gap-3 py-20 text-center">
               <span className="text-4xl">{tab === "feed" ? "😴" : "💸"}</span>
-              <p className="text-gray-500 text-sm">
-                {tab === "feed"    && "Sin promociones activas ahora mismo."}
-                {tab === "library" && "Tu bóveda está vacía. ¡Ve al feed y empieza a ahorrar!"}
+              <p className="gray-500 text-sm">
+                {tab === "feed"    && (i18n.language.startsWith('es') ? "Sin promociones activas ahora mismo." : "No active promotions right now.")}
+                {tab === "library" && (i18n.language.startsWith('es') ? "Tu bóveda está vacía. ¡Ve al feed y empieza a ahorrar!" : "Your vault is empty. Go to the feed and start saving!")}
               </p>
             </div>
           )}
@@ -335,10 +342,10 @@ function GameFeedApp() {
             <div className="flex flex-col items-center gap-3 py-20 text-center">
               <span className="text-4xl">🔍</span>
               <p className="text-gray-500 text-sm">
-                No hay juegos que coincidan con los filtros.
+                {i18n.language.startsWith('es') ? 'No hay juegos que coincidan con los filtros.' : 'No games match the filters.'}
               </p>
               <button onClick={handleClearAll} className="text-sm bg-[#27272a] text-white border border-[#3f3f46] px-4 py-2 rounded-lg hover:bg-[#3f3f46] transition-colors mt-2">
-                Limpiar filtros
+                {t('filters.clear')}
               </button>
             </div>
           )}
@@ -360,12 +367,12 @@ function GameFeedApp() {
 
           <footer className="mt-12 text-center text-xs text-[#8b949e] border-t border-[#30363d] pt-8 pb-4">
             <div className="flex justify-center gap-6 mb-3">
-              <Link to="/about" className="hover:text-white transition-colors">Acerca de</Link>
-              <Link to="/blog" className="hover:text-white transition-colors">Blog</Link>
-              <Link to="/privacy" className="hover:text-white transition-colors">Privacidad</Link>
-              <a href="mailto:contacto@gamefree.store" className="hover:text-white transition-colors">Contacto</a>
+              <Link to="/about" className="hover:text-white transition-colors">{t('nav.about')}</Link>
+              <Link to="/blog" className="hover:text-white transition-colors">{t('nav.blog')}</Link>
+              <Link to="/privacy" className="hover:text-white transition-colors">{t('nav.privacy')}</Link>
+              <a href="mailto:contacto@gamefree.store" className="hover:text-white transition-colors">{i18n.language.startsWith('es') ? 'Contacto' : 'Contact'}</a>
             </div>
-            GameFree — Juegos de pago, gratis ahora mismo.
+            {i18n.language.startsWith('es') ? 'GameFree — Juegos de pago, gratis ahora mismo.' : 'GameFree — Paid games, free right now.'}
           </footer>
         </div>
       </main>

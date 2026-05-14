@@ -1,6 +1,8 @@
 import { Gamepad2, Flame, Zap } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function HeroSection({ onExplore }) {
+  const { t } = useTranslation();
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0d1117]">
       {/* Background grid pattern */}
@@ -49,21 +51,18 @@ export default function HeroSection({ onExplore }) {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-400 opacity-75"></span>
             <span className="relative inline-flex h-2 w-2 rounded-full bg-indigo-500"></span>
           </span>
-          Ofertas actualizadas en tiempo real
+          {i18n.language.startsWith('es') ? 'Ofertas actualizadas en tiempo real' : 'Deals updated in real-time'}
         </div>
 
         {/* Main title */}
         <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-white mb-6">
-          <span className="block text-balance">No pagues</span>
-          <span className="block text-indigo-500">por jugar.</span>
+          <span className="block text-balance">{i18n.language.startsWith('es') ? 'No pagues' : 'Stop paying'}</span>
+          <span className="block text-indigo-500">{i18n.language.startsWith('es') ? 'por jugar.' : 'to play.'}</span>
         </h1>
 
         {/* Subtitle */}
         <p className="max-w-2xl mx-auto text-lg sm:text-xl text-gray-400 mb-10 leading-relaxed text-pretty">
-          Rastreamos juegos al{" "}
-          <span className="text-indigo-400 font-semibold">100% de descuento</span>{" "}
-          en Steam, Epic Games y GOG. Encuentra los mejores títulos gratis antes
-          de que se agoten.
+          {t('hero.subtitle')}
         </p>
 
         {/* CTA Button */}
@@ -73,7 +72,7 @@ export default function HeroSection({ onExplore }) {
             className="group relative overflow-hidden bg-indigo-600 text-white hover:bg-indigo-500 text-lg px-8 py-4 rounded-xl font-semibold shadow-lg shadow-indigo-600/25 transition-all hover:shadow-xl hover:shadow-indigo-600/40 hover:scale-105 cursor-pointer"
           >
             <span className="relative z-10 flex items-center gap-2">
-              Ver ofertas de hoy
+              {i18n.language.startsWith('es') ? 'Ver ofertas de hoy' : 'View today\'s deals'}
               <svg
                 className="h-5 w-5 transition-transform group-hover:translate-x-1"
                 fill="none"
@@ -94,7 +93,7 @@ export default function HeroSection({ onExplore }) {
         {/* Platform logos */}
         <div className="mt-16 flex flex-col items-center gap-4">
           <span className="text-sm text-gray-500 uppercase tracking-widest font-semibold">
-            Monitoreamos
+            {i18n.language.startsWith('es') ? 'Monitoreamos' : 'We monitor'}
           </span>
           <div className="flex items-center gap-8">
             {/* Steam */}
