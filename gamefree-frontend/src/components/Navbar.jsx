@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Gamepad2, Flame, Wallet, Menu, X, LogIn, LogOut, Languages } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "react-i18next";
