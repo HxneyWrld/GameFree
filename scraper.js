@@ -102,8 +102,14 @@ function normalizeGiveaway(giveaway) {
     if (!isNaN(parsed)) expirationDate = parsed.toISOString();
   }
 
+  // Limpiamos "(Tienda) Giveaway" o " Giveaway" del título
+  const cleanTitle = giveaway.title
+    .replace(/\s*\(.*?\)\s*Giveaway$/i, "")
+    .replace(/\s*Giveaway$/i, "")
+    .trim();
+
   return {
-    title          : giveaway.title,
+    title          : cleanTitle,
     thumbnail_url  : giveaway.image,
     store_name     : storeName,
     claim_url      : giveaway.open_giveaway_url,

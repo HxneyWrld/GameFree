@@ -1,5 +1,6 @@
 import { ExternalLink, Tag } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 const STORE_STYLES = {
   "Epic Games": "bg-emerald-500 text-white",
@@ -15,10 +16,8 @@ export default function DealCard({ game }) {
   const badgeStyle = STORE_STYLES[game.store_name] || "bg-[#30363d] text-white";
 
   return (
-    <a
-      href={game.claim_url}
-      target="_blank"
-      rel="noopener noreferrer"
+    <Link
+      to={`/deal/${game.id}`}
       className="block group relative flex flex-col h-full overflow-hidden rounded-xl bg-[#161b22] border border-[#30363d] transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-black/50 hover:border-rose-500/50 cursor-pointer"
     >
       <div className="relative aspect-[16/9] overflow-hidden bg-[#0d1117]">
@@ -78,6 +77,6 @@ export default function DealCard({ game }) {
           </div>
         </div>
       </div>
-    </a>
+    </Link>
   );
 }

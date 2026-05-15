@@ -337,6 +337,29 @@ app.get("/api/deals", async (req, res) => {
 });
 
 // ─────────────────────────────────────────────────────────────
+// DEALS DETAIL: Obtener detalles de una oferta específica
+// GET /api/deals/:id
+// ─────────────────────────────────────────────────────────────
+app.get("/api/deals/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { data, error } = await supabase
+      .from("deals")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      return res.status(404).json({ success: false, message: "Oferta no encontrada." });
+    }
+
+    return res.status(200).json({ success: true, data });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: "Error interno del servidor." });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────
 // GAME DETAIL: Obtener detalles de un juego específico
 // GET /api/games/:id
 // ─────────────────────────────────────────────────────────────

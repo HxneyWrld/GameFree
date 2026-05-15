@@ -15,6 +15,7 @@ import BlogIndex from "./pages/blog/BlogIndex";
 import ComoNoPerderOfertas from "./pages/blog/posts/ComoNoPerderOfertas";
 import MejoresMayo from "./pages/blog/posts/MejoresMayo";
 import GameDetail from "./pages/GameDetail";
+import DealDetail from "./pages/DealDetail";
 import { useTranslation } from "react-i18next";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
@@ -429,6 +430,7 @@ export default function App() {
         <Route path="/blog/como-no-perderte-ofertas-epic" element={<ComoNoPerderOfertas />} />
         <Route path="/blog/mejores-juegos-gratis-mayo-2026" element={<MejoresMayo />} />
         <Route path="/game/:id" element={<GameDetail />} />
+        <Route path="/deal/:id" element={<DealDetail />} />
       </Routes>
     </AuthProvider>
   );
