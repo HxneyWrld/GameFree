@@ -1,58 +1,102 @@
-# 🎮 GameFree — Documentación Técnica (Arquitectura NestJS)
+# 📚 GameFree — Documentación Detallada del Sistema
 
-> **GameFree** es un ecosistema bilingüe bilingüe que centraliza ofertas de juegos gratuitos. Esta documentación detalla la arquitectura moderna basada en **NestJS** y **React 19**.
-
----
-
-## 1. Arquitectura del Sistema
-El sistema utiliza un diseño desacoplado para máxima escalabilidad:
-
-1. **Backend (NestJS):** API robusta construida con TypeScript. Gestiona la lógica de negocio, integración con Supabase y seguridad.
-2. **Frontend (React):** Interfaz de usuario bilingüe, reactiva y optimizada para la conversión.
-3. **Persistencia (Supabase):** PostgreSQL gestionado, Auth JWT y políticas RLS.
-4. **Ingesta (Scraper):** Script independiente que alimenta la base de datos con ofertas traducidas.
+GameFree es un ecosistema completo para el seguimiento de contenido gamer gratuito y ofertas extremas. Esta documentación cubre cada aspecto técnico y funcional de la plataforma.
 
 ---
 
-## 2. Backend — NestJS
-Se ha migrado el backend de Express a **NestJS** para aprovechar su arquitectura modular y el uso de TypeScript.
+## 1. Arquitectura General
+La aplicación sigue una arquitectura de **SPA (Single Page Application)** con un backend desacoplado y procesos de automatización independientes.
 
-- **Main.ts:** Configura CORS globalmente para permitir peticiones desde cualquier origen (esencial para el despliegue en Render/Vercel).
-- **Módulos:** Organización lógica por dominios (Auth, Games, Users).
-- **Seguridad:** Validación de tokens JWT mediante los servicios de Supabase.
-
----
-
-## 3. Frontend — React + i18n
-La interfaz está construida con **React 19** y **Tailwind CSS v4**.
-
-### Estrategia de Internacionalización (i18n)
-Utilizamos un enfoque híbrido para garantizar que el 100% de la app sea bilingüe:
-- **UI Estática:** Diccionarios locales en `i18n.js` para botones, menús y formularios.
-- **Contenido Dinámico:** El scraper traduce descripciones e instrucciones a `_es` y `_en`. El frontend renderiza la columna correspondiente según el idioma activo.
-- **Páginas de Texto:** About, Privacy y Posts del Blog contienen ambas versiones y renderizan condicionalmente para evitar latencia.
+- **Frontend:** React 19 + Vite.
+- **Backend:** Node.js / Express (migrando a NestJS) + Supabase SDK.
+- **Base de Datos:** PostgreSQL (vía Supabase).
+- **Automatización:** GitHub Actions + Node.js Scripts.
 
 ---
 
-## 4. Flujo de Datos y Gamificación
-- **Bóveda de Ahorros:** Cuando un usuario reclama un juego, el sistema calcula el precio original y actualiza el contador de "Total Ahorrado".
-- **Optimistic UI:** La interfaz responde instantáneamente a las acciones del usuario (marcar como reclamado/favorito) mientras la petición se procesa en segundo plano.
+## 2. Funcionalidades Detalladas
+
+### A. Feed de Juegos Gratis (100% OFF)
+- **Origen:** Datos extraídos de la API de GamerPower.
+- **Limpieza de Títulos:** Algoritmo de limpieza que elimina redundancias como "(Epic Games) Giveaway" para mostrar solo el nombre puro del juego.
+- **Detalles:** Vista dedicada con descripción traducida, instrucciones de reclamo, cronómetro de expiración y banners visuales.
+
+### B. Sección de Mega Ofertas (+80% OFF)
+- **Origen:** Integración con la API de CheapShark.
+- **Filtro de Calidad:** Solo se muestran juegos con descuentos superiores al 80%.
+- **Vistas:** Página de detalles propia que incluye puntuación de Metacritic y comparativa de precios.
+
+### C. La Bóveda (Vault)
+- **Gamificación:** Cada vez que un usuario hace clic en "Reclamar", el juego se añade a su biblioteca personal.
+- **Contador de Ahorro:** El sistema suma el `original_price` de cada juego reclamado para mostrar un total de ahorro acumulado en USD.
+- **Estado Persistente:** Los juegos reclamados se marcan visualmente en el feed para evitar duplicados.
+
+### D. Internacionalización (i18n)
+- **Sistema:** `react-i18next`.
+- **Traducción Automática:** El scraper traduce dinámicamente las descripciones del inglés al español usando la API de Google Translate durante la ingesta.
+- **Soporte Completo:** Todo el contenido, desde botones hasta avisos legales, está disponible en ES/EN.
 
 ---
 
-## 5. El Motor de Datos (`scraper.js`)
-El scraper es el encargado de mantener la plataforma viva:
-1. **Fetch:** Obtiene datos de GamerPower.
-2. **Normalización:** Limpia los slugs de las tiendas y parsea los precios.
-3. **Traducción:** Genera contenido bilingüe para cada entrada.
-4. **Sincronización:** Realiza un `upsert` en Supabase para evitar duplicados y limpia los juegos expirados.
+## 3. Componentes de la Interfaz (UI/UX)
+
+- **Navbar Premium:** Acceso rápido a Gratis, Ofertas, Bóveda y Blog con iconos de Lucide.
+- **Segmented Control Toggle:** Interruptor animado para cambiar entre el feed de "Gratis" y "Ofertas" sin recargar la página.
+- **Hero Section:** Banner dinámico que persiste durante la navegación para mantener la identidad visual.
+- **DealCard & GameCard:** Tarjetas optimizadas con badges de tienda, porcentajes de descuento y efectos de hover "glassmorphism".
 
 ---
 
-## 6. Despliegue (DevOps)
-- **Frontend:** Desplegado en **Netlify/Vercel** con redirección de SPA configurada.
-- **Backend:** Desplegado en **Render** (Plan Starter para evitar el arranque en frío).
-- **Base de Datos:** Instancia gestionada en **Supabase**.
+## 4. Backend y API
+Puntos de acceso principales:
+- `GET /api/games/free`: Devuelve la lista de juegos gratuitos actuales.
+- `GET /api/deals`: Devuelve ofertas filtradas por porcentaje de descuento.
+- `GET /api/games/:id` / `GET /api/deals/:id`: Detalles extendidos de un ítem.
+- `POST /api/games/:id/claim`: Registra un juego en la bóveda del usuario (Protegido por JWT).
 
 ---
-*Última actualización: Mayo 2026 — Migración a NestJS completada.*
+
+## 5. Automatización (Scrapers)
+Ubicados en la raíz del proyecto, se ejecutan mediante **GitHub Actions** cada 12 horas:
+
+1. **`scraper.js`**:
+   - Consulta GamerPower.
+   - Traduce contenido.
+   - Realiza `upsert` en la tabla `games`.
+   - Limpia registros expirados.
+
+2. **`deals-scraper.js`**:
+   - Consulta CheapShark.
+   - Filtra ofertas AAA y destacados.
+   - Sincroniza la tabla `deals`.
+
+---
+
+## 6. Base de Datos (Esquema Supabase)
+
+### Tabla `games`
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| id | UUID | Identificador único |
+| title | String | Nombre limpio del juego |
+| original_price | Numeric | Precio de referencia |
+| store_name | String | Tienda de origen |
+| expiration_date | Timestamp | Fecha fin de oferta |
+
+### Tabla `deals`
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| id | UUID | Identificador único |
+| discount_pct | Integer | Porcentaje (ej. 90) |
+| sale_price | Numeric | Precio con oferta |
+| metacritic | Integer | Puntuación crítica |
+
+---
+
+## 7. Seguridad y RLS
+La base de datos utiliza **Row Level Security (RLS)**:
+- **Lectura:** Pública para todas las ofertas.
+- **Escritura:** Solo permitida para el `service_role` (scrapers) y usuarios autenticados para sus propios favoritos/bóveda.
+
+---
+*Documentación actualizada por Antigravity AI — Mayo 2026*

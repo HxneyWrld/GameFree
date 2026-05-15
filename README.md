@@ -1,6 +1,6 @@
 # 🎮 GameFree
 
-GameFree es una plataforma web moderna y bilingüe diseñada para rastrear, centralizar y notificar a los usuarios sobre juegos de PC que se encuentran **100% gratis** por tiempo limitado en tiendas como Steam, Epic Games, GOG, itch.io y más.
+GameFree es una plataforma web moderna y bilingüe diseñada para rastrear, centralizar y notificar a los usuarios sobre juegos de PC gratuitos y ofertas masivas. Nuestra misión es que nunca vuelvas a pagar el precio completo por un juego premium.
 
 ---
 
@@ -15,12 +15,14 @@ La plataforma ofrece una experiencia nativa tanto en **Español** como en **Ingl
 
 ## 🌟 Características Principales
 
-- **🔥 Feed en Tiempo Real:** Lista actualizada constantemente de los juegos gratis disponibles.
-- **💎 La Bóveda de Ahorros:** Sistema gamificado donde los usuarios registran sus juegos reclamados y ven en tiempo real su ahorro total acumulado en $USD.
-- **🔍 Filtros y Búsqueda:** Filtrado por tienda (Epic, Steam, GOG, etc.) con búsqueda instantánea.
-- **🔐 Autenticación Segura:** Gestión de usuarios, favoritos y biblioteca personal mediante Supabase.
-- **📱 Diseño Responsive Premium:** Interfaz oscura (dark mode) optimizada con Tailwind CSS v4 para una experiencia fluida en cualquier dispositivo.
-- **📰 Blog Bilingüe:** Guías y noticias sobre ofertas de juegos.
+- **🎁 Juegos 100% Gratis:** Feed dedicado a regalos permanentes y temporales (Epic, Steam, GOG, etc.).
+- **🔥 Mega Ofertas (+80%):** Nueva sección que rastrea descuentos masivos (80-95%) para juegos AAA y destacados.
+- **💎 La Bóveda de Ahorros:** Sistema gamificado donde registras tus juegos reclamados y ves tu ahorro total acumulado.
+- **🎛️ Segmented Control Premium:** Navegación fluida entre Gratis y Ofertas mediante un toggle animado moderno.
+- **🔍 Filtros Avanzados:** Búsqueda y filtrado por tienda, estado y nombre.
+- **🔐 Autenticación Segura:** Gestión de perfiles y biblioteca personal mediante Supabase.
+- **📱 Diseño Responsive Profesional:** Interfaz oscura (dark mode) con iconografía de Lucide-react y animaciones fluidas.
+- **📰 Blog Bilingüe:** Guías para no perderse ninguna oferta.
 
 ---
 
@@ -54,8 +56,10 @@ GameFree/
 │   │   └── context/         # Estado global (Auth)
 ├── gamefree-backend/        # Backend (NestJS + TypeScript)
 │   ├── src/                 # Lógica de la API y módulos
-├── scraper.js               # Motor de datos y traducción
-└── package.json             # Configuración del espacio de trabajo
+├── scraper.js               # Scraper principal (GamerPower - Gratis)
+├── deals-scraper.js         # Nuevo scraper de ofertas (CheapShark - Deals)
+├── server.js                # Punto de entrada del servidor
+└── package.json             # Configuración del proyecto
 ```
 
 ---
