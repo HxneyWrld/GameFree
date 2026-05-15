@@ -221,7 +221,7 @@ function GameFeedApp() {
         onOpenAuth={handleOpenAuth}
       />
 
-      {tab === "feed" && (
+      {(tab === "feed" || tab === "deals") && (
         <HeroSection onExplore={() => document.getElementById('games-grid')?.scrollIntoView({ behavior: 'smooth' })} />
       )}
 
@@ -364,9 +364,9 @@ function GameFeedApp() {
           {/* Vacío general */}
           {!loading && !error && games.length === 0 && (
             <div className="flex flex-col items-center gap-3 py-20 text-center">
-              {tab === "feed" ? <Moon className="w-10 h-10 text-indigo-400" /> : <Wallet className="w-10 h-10 text-emerald-400" />}
-              <p className="gray-500 text-sm">
-                {tab === "feed"    && (i18n.language.startsWith('es') ? "Sin promociones activas ahora mismo." : "No active promotions right now.")}
+              {(tab === "feed" || tab === "deals") ? <Moon className="w-10 h-10 text-indigo-400" /> : <Wallet className="w-10 h-10 text-emerald-400" />}
+              <p className="text-gray-500 text-sm">
+                {(tab === "feed" || tab === "deals") && (i18n.language.startsWith('es') ? "Sin promociones activas ahora mismo." : "No active promotions right now.")}
                 {tab === "library" && (i18n.language.startsWith('es') ? "Tu bóveda está vacía. ¡Ve al feed y empieza a ahorrar!" : "Your vault is empty. Go to the feed and start saving!")}
               </p>
             </div>
