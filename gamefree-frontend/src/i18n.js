@@ -36,6 +36,7 @@ i18n
             clear: 'Limpiar'
           },
           game: {
+            back: 'Volver al Feed',
             free: 'GRATIS',
             ends: 'Termina en',
             expired: 'Expirado',
@@ -96,6 +97,7 @@ i18n
             clear: 'Clear'
           },
           game: {
+            back: 'Back to Feed',
             free: 'FREE',
             ends: 'Ends in',
             expired: 'Expired',

@@ -118,7 +118,7 @@ export default function GameDetail() {
             <div className="flex-1 z-10 w-full">
               <Link to="/" className="inline-flex items-center text-gray-400 hover:text-white transition-colors mb-4 bg-black/40 px-3 py-1.5 rounded-full text-sm backdrop-blur-md">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                {t('nav.about')}
+                {t('game.back')}
               </Link>
               
               <div className="flex flex-wrap items-center gap-3 mb-2">
