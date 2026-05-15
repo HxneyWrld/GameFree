@@ -55,7 +55,20 @@ i18n
             pass: 'Contraseña',
             register: 'Registrarse',
             login: 'Entrar',
-            forgot: '¿Olvidaste tu contraseña?'
+            createAccount: 'Crear Cuenta',
+            forgot: '¿Olvidaste tu contraseña?',
+            errors: {
+              emailRequired: 'El correo es obligatorio.',
+              emailLong: 'El correo es demasiado largo.',
+              emailInvalid: 'El formato del correo no es válido.',
+              passwordRequired: 'La contraseña es obligatoria.',
+              passwordLong: 'Máximo 64 caracteres.',
+              passwordShort: 'Mínimo 8 caracteres.',
+              passwordLower: 'Debe tener al menos una minúscula.',
+              passwordUpper: 'Debe tener al menos una mayúscula.',
+              passwordNumber: 'Debe tener al menos un número.',
+              passwordsMismatch: 'Las contraseñas no coinciden.'
+            }
           }
         }
       },
@@ -102,7 +115,20 @@ i18n
             pass: 'Password',
             register: 'Sign Up',
             login: 'Sign In',
-            forgot: 'Forgot password?'
+            createAccount: 'Create Account',
+            forgot: 'Forgot password?',
+            errors: {
+              emailRequired: 'Email is required.',
+              emailLong: 'Email is too long.',
+              emailInvalid: 'Invalid email format.',
+              passwordRequired: 'Password is required.',
+              passwordLong: 'Maximum 64 characters.',
+              passwordShort: 'Minimum 8 characters.',
+              passwordLower: 'Must have at least one lowercase letter.',
+              passwordUpper: 'Must have at least one uppercase letter.',
+              passwordNumber: 'Must have at least one number.',
+              passwordsMismatch: 'Passwords do not match.'
+            }
           }
         }
       }
