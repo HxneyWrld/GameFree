@@ -45,7 +45,10 @@ export default function FilterSidebar({
   statusOptions,
   selectedStatus,
   onStatusToggle,
-  onClearAll 
+  onClearAll,
+  sortBy,
+  onSortChange,
+  tab
 }) {
   const { t, i18n } = useTranslation();
   const totalFilters = selectedStores.length + selectedStatus.length;
@@ -107,6 +110,56 @@ export default function FilterSidebar({
                 count={option.count}
               />
             ))}
+          </div>
+        </section>
+
+        {/* Ordenar Section */}
+        <section className="p-4 border-b border-[#27272a]/50">
+          <h3 className="text-xs font-medium text-[#71717a] uppercase tracking-wider mb-3">
+            {i18n.language.startsWith('es') ? 'Ordenar por' : 'Sort by'}
+          </h3>
+          <select 
+            value={sortBy}
+            onChange={(e) => onSortChange(e.target.value)}
+            className="w-full bg-[#27272a] text-sm text-white border border-[#3f3f46] rounded-lg px-3 py-2 outline-none focus:border-indigo-500 transition-colors"
+          >
+            <option value="newest">{i18n.language.startsWith('es') ? "Agregados recientemente" : "Recently added"}</option>
+            {tab === "deals" && (
+              <>
+                <option value="discount_desc">{i18n.language.startsWith('es') ? "Mayor descuento" : "Highest discount"}</option>
+                <option value="price_asc">{i18n.language.startsWith('es') ? "Precio: Menor a mayor" : "Price: Low to high"}</option>
+                <option value="price_desc">{i18n.language.startsWith('es') ? "Precio: Mayor a menor" : "Price: High to low"}</option>
+              </>
+            )}
+            <option value="expiring_soon">{i18n.language.startsWith('es') ? "Expira más pronto" : "Expiring soon"}</option>
+            <option value="expiring_late">{i18n.language.startsWith('es') ? "Expira más tarde" : "Expiring late"}</option>
+          </select>
+        </section>
+
+        {/* NordVPN Sponsor Card */}
+        <section className="p-4 border-b border-[#27272a]/50">
+          <div className="bg-gradient-to-br from-[#0f172a] to-[#1e1b4b] border border-indigo-500/30 rounded-xl p-4 shadow-lg relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-2">
+              <span className="bg-indigo-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
+                {i18n.language.startsWith('es') ? 'Patrocinado' : 'Sponsored'}
+              </span>
+            </div>
+            <h3 className="text-white font-bold text-sm mb-2 mt-4 pr-6">
+              {i18n.language.startsWith('es') ? 'Protege tu conexión Gamer' : 'Protect your Gamer connection'}
+            </h3>
+            <ul className="text-xs text-indigo-200 space-y-1.5 mb-4">
+              <li className="flex items-center gap-1.5"><Check className="w-3 h-3 text-indigo-400" /> {i18n.language.startsWith('es') ? 'Mejores precios por región' : 'Better regional pricing'}</li>
+              <li className="flex items-center gap-1.5"><Check className="w-3 h-3 text-indigo-400" /> {i18n.language.startsWith('es') ? 'Menos lag en partidas' : 'Less lag in games'}</li>
+              <li className="flex items-center gap-1.5"><Check className="w-3 h-3 text-indigo-400" /> {i18n.language.startsWith('es') ? 'Acceso a juegos restringidos' : 'Access restricted games'}</li>
+            </ul>
+            <a 
+              href="https://nordvpn.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block text-center bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold py-2 rounded-lg transition-colors"
+            >
+              {i18n.language.startsWith('es') ? 'Obtener NordVPN' : 'Get NordVPN'}
+            </a>
           </div>
         </section>
       </div>

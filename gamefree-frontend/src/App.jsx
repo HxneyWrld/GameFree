@@ -34,6 +34,7 @@ function GameFeedApp() {
   const [resetToken,   setResetToken]   = useState(null);
   const [tab,          setTab]          = useState("feed");
   const [claimedIds,   setClaimedIds]   = useState(new Set());
+  const [sortBy,       setSortBy]       = useState("newest");
   
   // Custom Toast State
   const [toastMessage, setToastMessage] = useState(null);
@@ -183,6 +184,7 @@ function GameFeedApp() {
     setSelectedStores([]);
     setSelectedStatus([]);
     setSearchQuery("");
+    setSortBy("newest");
   };
 
   const filteredGames = games.filter(g => {
@@ -193,6 +195,29 @@ function GameFeedApp() {
       if (!g.title.toLowerCase().includes(q)) return false;
     }
     return true;
+  });
+
+  const sortedGames = [...filteredGames].sort((a, b) => {
+    if (sortBy === "price_asc") {
+      return (a.sale_price || 0) - (b.sale_price || 0);
+    }
+    if (sortBy === "price_desc") {
+      return (b.sale_price || 0) - (a.sale_price || 0);
+    }
+    if (sortBy === "discount_desc") {
+      return (b.discount_pct || 0) - (a.discount_pct || 0);
+    }
+    if (sortBy === "expiring_soon") {
+      if (!a.expiration_date) return 1;
+      if (!b.expiration_date) return -1;
+      return new Date(a.expiration_date) - new Date(b.expiration_date);
+    }
+    if (sortBy === "expiring_late") {
+      if (!a.expiration_date) return 1;
+      if (!b.expiration_date) return -1;
+      return new Date(b.expiration_date) - new Date(a.expiration_date);
+    }
+    return 0; // "newest" or default
   });
 
   const totalSavings = games.reduce((acc, g) => acc + (g.original_price || 0), 0);
@@ -251,6 +276,9 @@ function GameFeedApp() {
               selectedStatus={selectedStatus}
               onStatusToggle={handleStatusToggle}
               onClearAll={handleClearAll}
+              sortBy={sortBy}
+              onSortChange={setSortBy}
+              tab={tab}
             />
           </div>
         </div>
@@ -324,12 +352,12 @@ function GameFeedApp() {
           )}
 
           {/* Contador y botón filtro móvil */}
-          {!loading && !error && filteredGames.length > 0 && (
+          {!loading && !error && sortedGames.length > 0 && (
             <div className="mb-6 flex items-center justify-between">
               <span className="inline-flex items-center gap-1.5 text-xs font-medium bg-indigo-900/30 text-indigo-300 border border-indigo-700/40 px-3 py-1 rounded-full">
-                <Gamepad2 className="w-4 h-4" /> {filteredGames.length} {i18n.language.startsWith('es') 
-                  ? (filteredGames.length === 1 ? "juego disponible" : "juegos disponibles")
-                  : (filteredGames.length === 1 ? "game available" : "games available")}
+                <Gamepad2 className="w-4 h-4" /> {sortedGames.length} {i18n.language.startsWith('es') 
+                  ? (sortedGames.length === 1 ? "juego disponible" : "juegos disponibles")
+                  : (sortedGames.length === 1 ? "game available" : "games available")}
               </span>
               <div className="md:hidden">
                 <button 
@@ -376,7 +404,7 @@ function GameFeedApp() {
           )}
 
           {/* Vacío por filtros */}
-          {!loading && !error && games.length > 0 && filteredGames.length === 0 && (
+          {!loading && !error && games.length > 0 && sortedGames.length === 0 && (
             <div className="flex flex-col items-center gap-3 py-20 text-center">
               <Search className="w-10 h-10 text-gray-500" />
               <p className="text-gray-500 text-sm">
@@ -389,9 +417,9 @@ function GameFeedApp() {
           )}
 
           {/* Grid de juegos */}
-          {!loading && !error && filteredGames.length > 0 && (
+          {!loading && !error && sortedGames.length > 0 && (
             <ul className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 list-none p-0">
-              {filteredGames.map((game) => (
+              {sortedGames.map((game) => (
                 <li key={game.id}>
                   {tab === "deals" ? (
                     <DealCard game={game} />
