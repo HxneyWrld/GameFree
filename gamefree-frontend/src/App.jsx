@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Gamepad2, AlertTriangle, Moon, Wallet, Search } from "lucide-react";
+import { Gamepad2, AlertTriangle, Moon, Wallet, Search, Flame } from "lucide-react";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { Routes, Route, Link } from "react-router-dom";
 import GameCard from "./components/GameCard";
@@ -273,7 +273,7 @@ function GameFeedApp() {
                     tab === "deals" ? "text-rose-400" : "text-gray-400 hover:text-gray-200"
                   }`}
                 >
-                  <AlertTriangle className="w-5 h-5" />
+                  <Flame className="w-5 h-5" />
                   {i18n.language.startsWith('es') ? "Mega Ofertas" : "Mega Deals"}
                 </button>
                 {/* Active Indicator */}
