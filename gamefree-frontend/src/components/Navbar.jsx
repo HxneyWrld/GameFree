@@ -4,7 +4,8 @@ import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "react-i18next";
 
 const navLinks = [
-  { key: "feed",      labelKey: "nav.feed", icon: Flame },
+  { key: "feed",      labelKey: "nav.free", icon: Gamepad2 },
+  { key: "deals",     labelKey: "nav.deals", icon: Flame },
   { key: "library",   labelKey: "nav.vault", icon: Wallet },
 ];
 
@@ -43,7 +44,7 @@ export default function Navbar({ activeTab, onTabChange, onOpenAuth }) {
         {/* Nav desktop */}
         <div className="navbar-links">
           {navLinks.map(({ key, labelKey, icon: Icon }) => {
-            if (!isLoggedIn && key !== "feed") return null;
+            if (!isLoggedIn && key === "library") return null;
             return (
               <button
                 key={key}
@@ -108,7 +109,7 @@ export default function Navbar({ activeTab, onTabChange, onOpenAuth }) {
       <div className={`navbar-mobile-menu ${isMenuOpen ? "navbar-mobile-menu--open" : ""}`}>
         <div className="navbar-mobile-links">
           {navLinks.map(({ key, labelKey, icon: Icon }, index) => {
-            if (!isLoggedIn && key !== "feed") return null;
+            if (!isLoggedIn && key === "library") return null;
             return (
               <button
                 key={key}

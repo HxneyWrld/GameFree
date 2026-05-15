@@ -3,6 +3,7 @@ import { Gamepad2, AlertTriangle, Moon, Wallet, Search } from "lucide-react";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { Routes, Route, Link } from "react-router-dom";
 import GameCard from "./components/GameCard";
+import DealCard from "./components/DealCard";
 import AuthModal from "./components/AuthModal";
 import Navbar from "./components/Navbar";
 
@@ -67,13 +68,14 @@ function GameFeedApp() {
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
     const endpoints = {
       feed:      "/api/games/free",
+      deals:     "/api/deals",
       library:   "/api/user/library",
     };
     try {
       const res  = await fetch(`${API_URL}${endpoints[tab]}`, { headers });
       const json = await res.json();
       if (!json.success) throw new Error(json.message);
-      if (tab === "feed") {
+      if (tab === "feed" || tab === "deals") {
         setGames(json.data);
       } else {
         setGames(
@@ -107,7 +109,7 @@ function GameFeedApp() {
   useEffect(() => { loadUserState(); }, [isLoggedIn, token]);
 
   useEffect(() => {
-    if (!isLoggedIn && tab !== "feed") setTab("feed");
+    if (!isLoggedIn && tab === "library") setTab("feed");
   }, [isLoggedIn]);
 
   const handleOpenAuth = () => {
@@ -252,6 +254,37 @@ function GameFeedApp() {
         {/* Main Grid Area */}
         <div className="flex-1 min-w-0">
           
+          {/* Toggle Gratis / Ofertas */}
+          {(tab === "feed" || tab === "deals") && (
+            <div className="flex justify-center mb-10">
+              <div className="bg-[#161b22] border border-[#30363d] p-1.5 rounded-2xl inline-flex relative shadow-xl shadow-black/20">
+                <button
+                  onClick={() => setTab("feed")}
+                  className={`relative z-10 flex items-center justify-center min-w-[140px] gap-2 px-6 py-3 rounded-xl font-bold transition-all duration-300 ${
+                    tab === "feed" ? "text-emerald-400" : "text-gray-400 hover:text-gray-200"
+                  }`}
+                >
+                  <Gamepad2 className="w-5 h-5" />
+                  {i18n.language.startsWith('es') ? "100% Gratis" : "100% Free"}
+                </button>
+                <button
+                  onClick={() => setTab("deals")}
+                  className={`relative z-10 flex items-center justify-center min-w-[140px] gap-2 px-6 py-3 rounded-xl font-bold transition-all duration-300 ${
+                    tab === "deals" ? "text-rose-400" : "text-gray-400 hover:text-gray-200"
+                  }`}
+                >
+                  <AlertTriangle className="w-5 h-5" />
+                  {i18n.language.startsWith('es') ? "Mega Ofertas" : "Mega Deals"}
+                </button>
+                {/* Active Indicator */}
+                <div 
+                  className="absolute top-1.5 bottom-1.5 w-[calc(50%-0.375rem)] bg-[#21262d] rounded-xl transition-transform duration-300 ease-out border border-[#30363d]"
+                  style={{ transform: tab === "feed" ? "translateX(0%)" : "translateX(100%)", left: "0.375rem" }}
+                />
+              </div>
+            </div>
+          )}
+          
           {/* Banner de Ahorro para Mi Bóveda */}
           {tab === "library" && !loading && !error && (
             <div className="mb-8 p-6 rounded-2xl bg-gradient-to-br from-indigo-900/40 to-purple-900/20 border border-indigo-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -278,7 +311,7 @@ function GameFeedApp() {
               </div>
               <input
                 type="text"
-                placeholder={tab === "feed" ? t('filters.search') : (i18n.language.startsWith('es') ? "Buscar en tu bóveda..." : "Search in your vault...")}
+                placeholder={tab === "library" ? (i18n.language.startsWith('es') ? "Buscar en tu bóveda..." : "Search in your vault...") : t('filters.search')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-[#161b22] border border-[#30363d] text-white rounded-xl pl-11 pr-4 py-3.5 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors placeholder-[#8b949e] shadow-sm"
@@ -356,11 +389,15 @@ function GameFeedApp() {
             <ul className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 list-none p-0">
               {filteredGames.map((game) => (
                 <li key={game.id}>
-                  <GameCard
-                    game={game}
-                    onOptimisticClaim={handleOptimisticClaim}
-                    initialClaimed={claimedIds.has(game.id)}
-                  />
+                  {tab === "deals" ? (
+                    <DealCard game={game} />
+                  ) : (
+                    <GameCard
+                      game={game}
+                      onOptimisticClaim={handleOptimisticClaim}
+                      initialClaimed={claimedIds.has(game.id)}
+                    />
+                  )}
                 </li>
               ))}
             </ul>

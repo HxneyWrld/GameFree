@@ -16,6 +16,8 @@ i18n
         translation: {
           nav: {
             feed: 'Feed de Ofertas',
+            free: 'Juegos Gratis',
+            deals: 'Mega Ofertas',
             vault: 'Mi Bóveda',
             login: 'Iniciar Sesión',
             logout: 'Salir',
@@ -77,6 +79,8 @@ i18n
         translation: {
           nav: {
             feed: 'Deals Feed',
+            free: 'Free Games',
+            deals: 'Mega Deals',
             vault: 'My Vault',
             login: 'Login',
             logout: 'Logout',
