@@ -14,6 +14,9 @@ import Privacy from "./pages/Privacy";
 import BlogIndex from "./pages/blog/BlogIndex";
 import ComoNoPerderOfertas from "./pages/blog/posts/ComoNoPerderOfertas";
 import MejoresMayo from "./pages/blog/posts/MejoresMayo";
+import DiferenciaDealsGratis from "./pages/blog/posts/DiferenciaDealsGratis";
+import AhorroTotalBoveda from "./pages/blog/posts/AhorroTotalBoveda";
+import ConsejosSeguridad from "./pages/blog/posts/ConsejosSeguridad";
 import GameDetail from "./pages/GameDetail";
 import DealDetail from "./pages/DealDetail";
 import { useTranslation } from "react-i18next";
@@ -429,6 +432,9 @@ export default function App() {
         <Route path="/blog" element={<BlogIndex />} />
         <Route path="/blog/como-no-perderte-ofertas-epic" element={<ComoNoPerderOfertas />} />
         <Route path="/blog/mejores-juegos-gratis-mayo-2026" element={<MejoresMayo />} />
+        <Route path="/blog/diferencia-deals-gratis" element={<DiferenciaDealsGratis />} />
+        <Route path="/blog/ahorro-total-boveda" element={<AhorroTotalBoveda />} />
+        <Route path="/blog/seguridad-evitar-estafas" element={<ConsejosSeguridad />} />
         <Route path="/game/:id" element={<GameDetail />} />
         <Route path="/deal/:id" element={<DealDetail />} />
       </Routes>

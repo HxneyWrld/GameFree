@@ -24,11 +24,32 @@ export default function BlogIndex() {
 
   const posts = [
     {
+      slug:    "diferencia-deals-gratis",
+      title:   isEn ? "Free Games vs. Mega Deals: Which to choose?" : "Juegos Gratis vs. Mega Ofertas: ¿Cuál elegir?",
+      date:    isEn ? "May 15, 2026" : "15 de mayo, 2026",
+      excerpt: isEn ? "We explain the difference between our two main sections and how to get the most out of each." : "Te explicamos la diferencia entre nuestras dos secciones principales y cómo sacar el máximo provecho a cada una.",
+      minutes: 5,
+    },
+    {
+      slug:    "ahorro-total-boveda",
+      title:   isEn ? "The Savings Vault: How much money have you saved?" : "La Bóveda de Ahorros: ¿Cuánto dinero has ahorrado?",
+      date:    isEn ? "May 14, 2026" : "14 de mayo, 2026",
+      excerpt: isEn ? "Discover how our vault system works and why seeing your savings in USD is so satisfying." : "Descubre cómo funciona nuestro sistema de bóveda y por qué ver tus ahorros en USD es tan satisfactorio.",
+      minutes: 4,
+    },
+    {
       slug:    "mejores-juegos-gratis-mayo-2026",
       title:   isEn ? "The best free games of May 2026" : "Los mejores juegos gratuitos de mayo 2026",
       date:    isEn ? "May 13, 2026" : "13 de mayo, 2026",
       excerpt: isEn ? "This month Epic, Steam, and GOG gave away titles that normally cost between $10 and $30. We tell you which were the most outstanding." : "Este mes Epic, Steam y GOG regalaron títulos que normalmente cuestan entre $10 y $30. Te contamos cuáles fueron los más destacados.",
       minutes: 3,
+    },
+    {
+      slug:    "seguridad-evitar-estafas",
+      title:   isEn ? "Online Safety: How to avoid 'Free Game' scams" : "Seguridad Online: Cómo evitar estafas de 'Juegos Gratis'",
+      date:    isEn ? "May 12, 2026" : "12 de mayo, 2026",
+      excerpt: isEn ? "Not all 'free' is legitimate. Learn to distinguish a real gift from a phishing trap." : "No todo lo 'gratis' es legítimo. Aprende a distinguir un regalo real de una trampa de phishing.",
+      minutes: 6,
     },
     {
       slug:    "como-no-perderte-ofertas-epic",
