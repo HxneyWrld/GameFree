@@ -1,62 +1,58 @@
-# 🎮 GameFree — Documentación Técnica Completa
+# 🎮 GameFree — Documentación Técnica (Arquitectura NestJS)
 
-> **GameFree** es una ecosistema web bilingüe (ES/EN) que centraliza ofertas de juegos "premium" gratuitos. Utiliza una arquitectura desacoplada con sincronización automática de datos.
-
----
-
-## 1. Visión General del Producto
-GameFree resuelve la fragmentación de ofertas gratuitas. La plataforma no solo informa, sino que **gamifica el ahorro**:
-- **Feed:** Ofertas activas con cuenta regresiva.
-- **Bóveda:** Historial de juegos reclamados con contador de dólares ($) ahorrados.
-- **Blog:** Contenido educativo bilingüe para maximizar las bibliotecas de los usuarios.
-
-## 2. Stack Tecnológico Detallado
-
-### Backend (Node.js + Express)
-- **Express v5:** Manejo de rutas y middlewares.
-- **CORS:** Configurado para permitir comunicación entre dominios (Netlify <-> Render).
-- **Supabase JS:** Integración con la base de datos y validación de tokens JWT.
-
-### Base de Datos (Supabase)
-- **PostgreSQL:** Almacenamiento relacional.
-- **Auth:** Sistema GoTrue para login, registro y recuperación de clave vía Email.
-- **RLS (Row Level Security):** Políticas de seguridad que aseguran que un usuario solo pueda ver/editar su propia Bóveda.
-
-### Frontend (React 19 + Tailwind v4)
-- **i18next:** Internacionalización completa de la UI y contenidos dinámicos.
-- **Optimistic UI:** Los juegos se marcan como "reclamados" instantáneamente en la interfaz antes de que el servidor confirme, mejorando la percepción de velocidad.
-- **Vite:** Herramienta de construcción y HMR (Hot Module Replacement).
+> **GameFree** es un ecosistema bilingüe bilingüe que centraliza ofertas de juegos gratuitos. Esta documentación detalla la arquitectura moderna basada en **NestJS** y **React 19**.
 
 ---
 
-## 3. El Motor de Datos: `scraper.js`
-Este script es el corazón de la plataforma. Realiza las siguientes tareas:
-1. **Extracción:** Consulta la API de GamerPower buscando solo juegos completos para PC.
-2. **Traducción Automática:** Utiliza un sistema de mapeo para generar versiones `_en` y `_es` de las descripciones e instrucciones.
-3. **Normalización:** Limpia precios y fechas para asegurar que el feed sea consistente.
-4. **Limpieza:** Elimina de la base de datos local los juegos que ya han expirado en las tiendas oficiales.
+## 1. Arquitectura del Sistema
+El sistema utiliza un diseño desacoplado para máxima escalabilidad:
 
-## 4. Internacionalización (i18n)
-La app utiliza un enfoque híbrido para el cambio de idioma:
-- **UI Estática:** Diccionario de llaves en `i18n.js` para botones, menús y errores.
-- **Contenido Dinámico:** El scraper guarda versiones bilingües en la BD. El frontend decide qué columna mostrar (`description_es` o `description_en`) basándose en el estado de `i18n.language`.
-- **Páginas de Texto:** Componentes como `About.jsx` o los posts del blog contienen ambas versiones y renderizan condicionalmente para máxima velocidad.
-
-## 5. Autenticación y Recuperación
-- **Seguridad:** El `AuthModal` valida la complejidad de la contraseña antes de enviarla.
-- **Flujo de Recuperación:** 
-  - El usuario solicita link → Supabase envía email → El link contiene un `#access_token`.
-  - La app detecta el hash, abre el modal en modo `reset` y **limpia la URL** para proteger el token.
-
-## 6. Despliegue y Mantenimiento
-- **Frontend (Netlify):** Configurado con `netlify.toml` para manejar el routing de SPA (evita el error 404 al recargar).
-- **Backend (Render):** Servidor Express que se mantiene "despierto" mediante el uso activo de la plataforma.
-- **Base de Datos (Supabase):** Hosting gestionado con copias de seguridad automáticas.
-
-## 7. Próximos Pasos (Roadmap)
-- [ ] **Notificaciones Push:** Avisar al móvil/navegador cuando Epic Games libere el juego semanal.
-- [ ] **Categorías:** Filtrar por género (RPG, Acción, etc.).
-- [ ] **Social:** Permitir a los usuarios compartir su "Total Ahorrado" en Twitter/Discord.
+1. **Backend (NestJS):** API robusta construida con TypeScript. Gestiona la lógica de negocio, integración con Supabase y seguridad.
+2. **Frontend (React):** Interfaz de usuario bilingüe, reactiva y optimizada para la conversión.
+3. **Persistencia (Supabase):** PostgreSQL gestionado, Auth JWT y políticas RLS.
+4. **Ingesta (Scraper):** Script independiente que alimenta la base de datos con ofertas traducidas.
 
 ---
-*Última actualización: Mayo 2026*
+
+## 2. Backend — NestJS
+Se ha migrado el backend de Express a **NestJS** para aprovechar su arquitectura modular y el uso de TypeScript.
+
+- **Main.ts:** Configura CORS globalmente para permitir peticiones desde cualquier origen (esencial para el despliegue en Render/Vercel).
+- **Módulos:** Organización lógica por dominios (Auth, Games, Users).
+- **Seguridad:** Validación de tokens JWT mediante los servicios de Supabase.
+
+---
+
+## 3. Frontend — React + i18n
+La interfaz está construida con **React 19** y **Tailwind CSS v4**.
+
+### Estrategia de Internacionalización (i18n)
+Utilizamos un enfoque híbrido para garantizar que el 100% de la app sea bilingüe:
+- **UI Estática:** Diccionarios locales en `i18n.js` para botones, menús y formularios.
+- **Contenido Dinámico:** El scraper traduce descripciones e instrucciones a `_es` y `_en`. El frontend renderiza la columna correspondiente según el idioma activo.
+- **Páginas de Texto:** About, Privacy y Posts del Blog contienen ambas versiones y renderizan condicionalmente para evitar latencia.
+
+---
+
+## 4. Flujo de Datos y Gamificación
+- **Bóveda de Ahorros:** Cuando un usuario reclama un juego, el sistema calcula el precio original y actualiza el contador de "Total Ahorrado".
+- **Optimistic UI:** La interfaz responde instantáneamente a las acciones del usuario (marcar como reclamado/favorito) mientras la petición se procesa en segundo plano.
+
+---
+
+## 5. El Motor de Datos (`scraper.js`)
+El scraper es el encargado de mantener la plataforma viva:
+1. **Fetch:** Obtiene datos de GamerPower.
+2. **Normalización:** Limpia los slugs de las tiendas y parsea los precios.
+3. **Traducción:** Genera contenido bilingüe para cada entrada.
+4. **Sincronización:** Realiza un `upsert` en Supabase para evitar duplicados y limpia los juegos expirados.
+
+---
+
+## 6. Despliegue (DevOps)
+- **Frontend:** Desplegado en **Netlify/Vercel** con redirección de SPA configurada.
+- **Backend:** Desplegado en **Render** (Plan Starter para evitar el arranque en frío).
+- **Base de Datos:** Instancia gestionada en **Supabase**.
+
+---
+*Última actualización: Mayo 2026 — Migración a NestJS completada.*

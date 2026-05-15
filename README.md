@@ -4,30 +4,41 @@ GameFree es una plataforma web moderna y bilingüe diseñada para rastrear, cent
 
 ---
 
+## 🌍 Soporte Bilingüe Completo
+La plataforma ofrece una experiencia nativa tanto en **Español** como en **Inglés**. El cambio de idioma afecta instantáneamente a:
+- La interfaz de usuario (UI).
+- Descripciones y títulos de los juegos.
+- Instrucciones de reclamo.
+- Posts del blog y páginas informativas.
+
+---
+
 ## 🌟 Características Principales
 
-- **🌍 Soporte Bilingüe Completo:** Cambio de idioma (Español/Inglés) en tiempo real para toda la interfaz, incluyendo detalles de juegos y posts del blog.
 - **🔥 Feed en Tiempo Real:** Lista actualizada constantemente de los juegos gratis disponibles.
-- **💎 La Bóveda de Ahorros:** Un sistema gamificado donde los usuarios registran sus juegos reclamados y ven en tiempo real cuántos dólares ($USD) han ahorrado en total.
-- **🔍 Filtros Inteligentes:** Sistema de barra lateral para filtrar juegos por tienda (Epic, Steam, GOG, etc.) con búsqueda instantánea.
-- **🔐 Autenticación Robusta:** Registro, inicio de sesión y recuperación de contraseña seguro impulsado por Supabase.
-- **📱 Diseño Responsive Premium:** Interfaz oscura (dark mode) optimizada para móviles, tablets y desktop con animaciones fluidas.
-- **📰 Blog Integrado:** Guías y consejos sobre ofertas, totalmente bilingüe.
+- **💎 La Bóveda de Ahorros:** Sistema gamificado donde los usuarios registran sus juegos reclamados y ven en tiempo real su ahorro total acumulado en $USD.
+- **🔍 Filtros y Búsqueda:** Filtrado por tienda (Epic, Steam, GOG, etc.) con búsqueda instantánea.
+- **🔐 Autenticación Segura:** Gestión de usuarios, favoritos y biblioteca personal mediante Supabase.
+- **📱 Diseño Responsive Premium:** Interfaz oscura (dark mode) optimizada con Tailwind CSS v4 para una experiencia fluida en cualquier dispositivo.
+- **📰 Blog Bilingüe:** Guías y noticias sobre ofertas de juegos.
 
 ---
 
 ## 🛠️ Tecnologías Utilizadas
 
 ### Frontend
-- **React 19 + Vite:** SPA rápida y moderna.
-- **Tailwind CSS v4:** Estilizado de última generación con tokens personalizados.
-- **react-i18next:** Gestión profesional de internacionalización.
-- **Lucide React:** Iconografía vectorial elegante.
+- **React 19 + Vite:** SPA de alto rendimiento.
+- **Tailwind CSS v4:** Estilizado moderno con tokens personalizados.
+- **react-i18next:** Gestión de internacionalización.
+- **Lucide React:** Iconografía vectorial.
 
-### Backend & Datos
-- **Node.js + Express:** API REST para gestión de usuarios y lógica de negocio.
-- **Supabase (PostgreSQL):** Base de datos relacional y autenticación JWT nativa.
-- **Scraper Automatizado:** Script en Node.js que normaliza y traduce datos de la API de GamerPower.
+### Backend (Migrado a NestJS)
+- **NestJS:** Framework de Node.js progresivo para aplicaciones eficientes y escalables.
+- **TypeScript:** Tipado fuerte para un desarrollo robusto.
+- **Supabase (PostgreSQL):** Persistencia de datos y autenticación JWT.
+
+### Datos & Automatización
+- **Scraper Automatizado:** Script en Node.js que extrae, normaliza y traduce datos de la API de GamerPower.
 
 ---
 
@@ -35,16 +46,16 @@ GameFree es una plataforma web moderna y bilingüe diseñada para rastrear, cent
 
 ```text
 GameFree/
-├── gamefree-frontend/       # Aplicación React + Vite
+├── gamefree-frontend/       # Frontend (React + Vite)
 │   ├── src/
-│   │   ├── components/      # UI: Navbar, GameCard, AuthModal, Hero...
-│   │   ├── pages/           # About, Privacy y Blog (Bilingües)
-│   │   ├── context/         # AuthContext (Estado global)
-│   │   ├── i18n.js          # Configuración de idiomas (ES/EN)
-│   │   └── index.css        # Diseño Tailwind v4 y Animaciones
-├── scraper.js               # Cerebro de datos: Actualiza ofertas y traduce
-├── server.js                # Servidor Express API
-└── package.json             # Dependencias del sistema
+│   │   ├── components/      # UI: Navbar, GameCard, AuthModal...
+│   │   ├── pages/           # Vistas principales y Blog (Bilingües)
+│   │   ├── i18n.js          # Diccionarios ES/EN
+│   │   └── context/         # Estado global (Auth)
+├── gamefree-backend/        # Backend (NestJS + TypeScript)
+│   ├── src/                 # Lógica de la API y módulos
+├── scraper.js               # Motor de datos y traducción
+└── package.json             # Configuración del espacio de trabajo
 ```
 
 ---
@@ -58,24 +69,17 @@ GameFree/
    ```
 
 2. **Instalación:**
-   ```bash
-   npm install && cd gamefree-frontend && npm install
-   ```
+   - Backend: `cd gamefree-backend && npm install`
+   - Frontend: `cd gamefree-frontend && npm install`
 
 3. **Variables de Entorno:**
-   Crea un archivo `.env` en la raíz con tus credenciales de Supabase:
-   ```env
-   SUPABASE_URL=tu_url
-   SUPABASE_KEY=tu_anon_key
-   VITE_API_URL=http://localhost:3000
-   ```
+   Configura tus credenciales de Supabase en los archivos `.env` respectivos.
 
 4. **Ejecución:**
-   - Backend: `node server.js`
-   - Scraper (Opcional): `node scraper.js`
+   - Backend: `cd gamefree-backend && npm run start:dev`
    - Frontend: `cd gamefree-frontend && npm run dev`
 
 ---
 
 ## 🤝 Créditos
-Desarrollado con pasión para la comunidad gamer. Si te gusta el proyecto, ¡apóyanos con una ⭐ en GitHub!
+Desarrollado para la comunidad gamer que busca maximizar su biblioteca sin gastar un centavo. 🚀
