@@ -1,31 +1,33 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
-function validateEmail(email) {
+function validateEmail(email, t) {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!email) return "El correo es obligatorio.";
-  if (email.length > 255) return "El correo es demasiado largo.";
-  if (!regex.test(email)) return "El formato del correo no es válido.";
+  if (!email) return t('auth.errors.emailRequired');
+  if (email.length > 255) return t('auth.errors.emailLong');
+  if (!regex.test(email)) return t('auth.errors.emailInvalid');
   return null;
 }
 
-function validatePassword(password, mode) {
-  if (!password) return "La contraseña es obligatoria.";
-  if (password.length > 64) return "Máximo 64 caracteres.";
+function validatePassword(password, mode, t) {
+  if (!password) return t('auth.errors.passwordRequired');
+  if (password.length > 64) return t('auth.errors.passwordLong');
   if (mode === "register" || mode === "reset") {
-    if (password.length < 8) return "Mínimo 8 caracteres.";
-    if (!/(?=.*[a-z])/.test(password)) return "Debe tener al menos una minúscula.";
-    if (!/(?=.*[A-Z])/.test(password)) return "Debe tener al menos una mayúscula.";
-    if (!/(?=.*\d)/.test(password))    return "Debe tener al menos un número.";
+    if (password.length < 8) return t('auth.errors.passwordShort');
+    if (!/(?=.*[a-z])/.test(password)) return t('auth.errors.passwordLower');
+    if (!/(?=.*[A-Z])/.test(password)) return t('auth.errors.passwordUpper');
+    if (!/(?=.*\d)/.test(password))    return t('auth.errors.passwordNumber');
   }
   return null;
 }
 
 export default function AuthModal({ onClose, initialMode = "login", resetToken = null }) {
   const { login } = useAuth();
+  const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState(initialMode); // "login" | "register" | "recover" | "reset"
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -62,19 +64,26 @@ export default function AuthModal({ onClose, initialMode = "login", resetToken =
   }
 
   const strength = getPasswordStrength(password);
-  const strengthLabel = ["", "Muy débil", "Débil", "Regular", "Fuerte", "Muy fuerte"][strength];
+  const strengthLabel = [
+    "", 
+    i18n.language.startsWith('es') ? "Muy débil" : "Very weak", 
+    i18n.language.startsWith('es') ? "Débil" : "Weak", 
+    i18n.language.startsWith('es') ? "Regular" : "Fair", 
+    i18n.language.startsWith('es') ? "Fuerte" : "Strong", 
+    i18n.language.startsWith('es') ? "Muy fuerte" : "Very strong"
+  ][strength];
   const strengthColor = ["", "bg-rose-500", "bg-orange-500", "bg-yellow-500", "bg-emerald-500", "bg-emerald-400"][strength];
 
   function handleBlur(field) {
     const newErrors = { ...fieldErrors };
     if (field === "email" && activeTab !== "reset") {
-      newErrors.email = validateEmail(email);
+      newErrors.email = validateEmail(email, t);
     }
     if (field === "password" && activeTab !== "recover") {
-      newErrors.password = validatePassword(password, activeTab);
+      newErrors.password = validatePassword(password, activeTab, t);
     }
     if (field === "confirmPassword" && (activeTab === "register" || activeTab === "reset")) {
-      newErrors.confirmPassword = password !== confirmPassword ? "Las contraseñas no coinciden." : null;
+      newErrors.confirmPassword = password !== confirmPassword ? t('auth.errors.passwordsMismatch') : null;
     }
     setFieldErrors(newErrors);
   }
@@ -82,13 +91,13 @@ export default function AuthModal({ onClose, initialMode = "login", resetToken =
   function validateAll() {
     const newErrors = {};
     if (activeTab !== "reset") {
-      newErrors.email = validateEmail(email);
+      newErrors.email = validateEmail(email, t);
     }
     if (activeTab !== "recover") {
-      newErrors.password = validatePassword(password, activeTab);
+      newErrors.password = validatePassword(password, activeTab, t);
     }
     if (activeTab === "register" || activeTab === "reset") {
-      newErrors.confirmPassword = password !== confirmPassword ? "Las contraseñas no coinciden." : null;
+      newErrors.confirmPassword = password !== confirmPassword ? t('auth.errors.passwordsMismatch') : null;
     }
     setFieldErrors(newErrors);
     return !Object.values(newErrors).some(Boolean);
@@ -139,18 +148,18 @@ export default function AuthModal({ onClose, initialMode = "login", resetToken =
       }
 
       if (activeTab === "register") {
-        setSuccess("¡Cuenta creada! Revisa tu email para confirmarla.");
+        setSuccess(i18n.language.startsWith('es') ? "¡Cuenta creada! Revisa tu email para confirmarla." : "Account created! Check your email to confirm it.");
       } else if (activeTab === "recover") {
         setSuccess(json.message);
       } else if (activeTab === "reset") {
-        setSuccess("Contraseña actualizada correctamente. Ya puedes iniciar sesión.");
+        setSuccess(i18n.language.startsWith('es') ? "Contraseña actualizada correctamente. Ya puedes iniciar sesión." : "Password updated successfully. You can now log in.");
         setTimeout(() => handleTabChange("login"), 2000);
       } else {
         login(json.user, json.token);
         onClose();
       }
     } catch {
-      setError("Error de conexión. ¿Está corriendo el servidor?");
+      setError(i18n.language.startsWith('es') ? "Error de conexión. ¿Está corriendo el servidor?" : "Connection error. Is the server running?");
     } finally {
       setLoading(false);
     }
@@ -188,7 +197,7 @@ export default function AuthModal({ onClose, initialMode = "login", resetToken =
                   : "text-[#a1a1aa] hover:text-[#d4d4d8]"
               }`}
             >
-              Iniciar Sesión
+              {t('auth.login')}
               {activeTab === "login" && (
                 <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" />
               )}
@@ -202,7 +211,7 @@ export default function AuthModal({ onClose, initialMode = "login", resetToken =
                   : "text-[#a1a1aa] hover:text-[#d4d4d8]"
               }`}
             >
-              Registrarse
+              {t('auth.register')}
               {activeTab === "register" && (
                 <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" />
               )}
@@ -211,7 +220,9 @@ export default function AuthModal({ onClose, initialMode = "login", resetToken =
         ) : (
           <div className="flex border-b border-[#27272a]">
             <div className="flex-1 py-4 text-sm font-medium text-white text-center relative">
-              {activeTab === "recover" ? "Recuperar Contraseña" : "Elegir Nueva Contraseña"}
+              {activeTab === "recover" 
+                ? (i18n.language.startsWith('es') ? "Recuperar Contraseña" : "Recover Password") 
+                : (i18n.language.startsWith('es') ? "Elegir Nueva Contraseña" : "Choose New Password")}
               <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" />
             </div>
           </div>
@@ -226,7 +237,7 @@ export default function AuthModal({ onClose, initialMode = "login", resetToken =
           {activeTab !== "reset" && (
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium leading-none text-[#d4d4d8]">
-                Correo electrónico
+                {i18n.language.startsWith('es') ? "Correo electrónico" : "Email address"}
               </label>
               <input
                 id="email"
@@ -248,7 +259,9 @@ export default function AuthModal({ onClose, initialMode = "login", resetToken =
           {activeTab !== "recover" && (
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-medium leading-none text-[#d4d4d8]">
-                {activeTab === "reset" ? "Nueva contraseña" : "Contraseña"}
+                {activeTab === "reset" 
+                  ? (i18n.language.startsWith('es') ? "Nueva contraseña" : "New password") 
+                  : (i18n.language.startsWith('es') ? "Contraseña" : "Password")}
               </label>
               <input
                 id="password"
@@ -286,7 +299,9 @@ export default function AuthModal({ onClose, initialMode = "login", resetToken =
           {(activeTab === "register" || activeTab === "reset") && (
             <div className="space-y-2">
               <label htmlFor="confirmPassword" className="text-sm font-medium leading-none text-[#d4d4d8]">
-                {activeTab === "reset" ? "Confirmar nueva contraseña" : "Confirmar contraseña"}
+                {activeTab === "reset" 
+                  ? (i18n.language.startsWith('es') ? "Confirmar nueva contraseña" : "Confirm new password") 
+                  : (i18n.language.startsWith('es') ? "Confirmar contraseña" : "Confirm password")}
               </label>
               <input
                 id="confirmPassword"
@@ -311,30 +326,30 @@ export default function AuthModal({ onClose, initialMode = "login", resetToken =
             className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 w-full bg-white text-zinc-900 hover:bg-zinc-200 font-medium py-2.5 h-10 mt-2"
           >
             {loading 
-              ? "Cargando..." 
+              ? (i18n.language.startsWith('es') ? "Cargando..." : "Loading...") 
               : activeTab === "login" 
-                ? "Iniciar Sesión" 
+                ? t('auth.login') 
                 : activeTab === "register" 
-                  ? "Crear Cuenta" 
+                  ? t('auth.createAccount') 
                   : activeTab === "reset"
-                    ? "Guardar nueva contraseña"
-                    : "Enviar instrucciones"}
+                    ? (i18n.language.startsWith('es') ? "Guardar nueva contraseña" : "Save new password")
+                    : (i18n.language.startsWith('es') ? "Enviar instrucciones" : "Send instructions")}
           </button>
 
           {activeTab === "login" && (
             <p className="text-center text-sm text-[#71717a]">
-              ¿Olvidaste tu contraseña?{" "}
+              {i18n.language.startsWith('es') ? "¿Olvidaste tu contraseña?" : "Forgot your password?"}{" "}
               <button type="button" onClick={() => handleTabChange("recover")} className="text-white hover:underline">
-                Recupérala aquí
+                {i18n.language.startsWith('es') ? "Recupérala aquí" : "Recover it here"}
               </button>
             </p>
           )}
 
           {activeTab === "recover" && (
             <p className="text-center text-sm text-[#71717a]">
-              ¿Recordaste tu contraseña?{" "}
+              {i18n.language.startsWith('es') ? "¿Recordaste tu contraseña?" : "Remembered your password?"}{" "}
               <button type="button" onClick={() => handleTabChange("login")} className="text-white hover:underline">
-                Inicia sesión
+                {i18n.language.startsWith('es') ? "Inicia sesión" : "Log in"}
               </button>
             </p>
           )}
