@@ -73,7 +73,7 @@ export default function FilterSidebar({
       </div>
 
       {/* Filters Content */}
-      <div className="flex-1 overflow-y-auto max-h-[calc(100vh-200px)]">
+      <div className="flex-1">
         {/* Tiendas Section */}
         <section className="p-4 border-b border-[#27272a]/50">
           <h3 className="text-xs font-medium text-[#71717a] uppercase tracking-wider mb-3">
