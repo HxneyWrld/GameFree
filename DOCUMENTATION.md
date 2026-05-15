@@ -1,60 +1,62 @@
-# Documentación Técnica - GameFree
+# 🎮 GameFree — Documentación Técnica Completa
 
-Este documento describe la arquitectura, las decisiones técnicas y el flujo de la aplicación GameFree. Está pensado para futuras referencias en el mantenimiento y escalabilidad del proyecto.
-
----
-
-## 1. Arquitectura General
-
-GameFree opera bajo una arquitectura cliente-servidor clásica dividida en tres pilares:
-1. **Frontend (Cliente):** Aplicación de una sola página (SPA) en React manejada por Vite.
-2. **Backend (API REST):** Servidor monolítico ligero construido en Node.js y Express.
-3. **Persistencia y Auth:** Supabase (PostgreSQL + GoTrue) utilizado como Backend-as-a-Service para la base de datos y la autenticación.
+> **GameFree** es una ecosistema web bilingüe (ES/EN) que centraliza ofertas de juegos "premium" gratuitos. Utiliza una arquitectura desacoplada con sincronización automática de datos.
 
 ---
 
-## 2. Decisiones de Producto y Gamificación
+## 1. Visión General del Producto
+GameFree resuelve la fragmentación de ofertas gratuitas. La plataforma no solo informa, sino que **gamifica el ahorro**:
+- **Feed:** Ofertas activas con cuenta regresiva.
+- **Bóveda:** Historial de juegos reclamados con contador de dólares ($) ahorrados.
+- **Blog:** Contenido educativo bilingüe para maximizar las bibliotecas de los usuarios.
 
-En la última iteración del proyecto, se rediseñó la experiencia del usuario (UX) para proveer valor inmediato a través de **Gamificación**:
-- **Eliminación de "Favoritos":** Debido a que los juegos son promociones efímeras, un sistema de favoritos carecía de utilidad práctica a largo plazo.
-- **La Bóveda de Ahorros:** "Mi Biblioteca" se transformó en "Mi Bóveda". Cuando un usuario hace clic en "Reclamar", usamos **Actualización Optimista (Optimistic UI)** para agregar el juego inmediatamente a su historial. El sistema luego calcula el `original_price` de cada juego reclamado y muestra en una cabecera el ahorro total en dólares. Esto fomenta el registro y el regreso constante de los usuarios (engagement).
+## 2. Stack Tecnológico Detallado
 
----
+### Backend (Node.js + Express)
+- **Express v5:** Manejo de rutas y middlewares.
+- **CORS:** Configurado para permitir comunicación entre dominios (Netlify <-> Render).
+- **Supabase JS:** Integración con la base de datos y validación de tokens JWT.
 
-## 3. Autenticación y Seguridad
+### Base de Datos (Supabase)
+- **PostgreSQL:** Almacenamiento relacional.
+- **Auth:** Sistema GoTrue para login, registro y recuperación de clave vía Email.
+- **RLS (Row Level Security):** Políticas de seguridad que aseguran que un usuario solo pueda ver/editar su propia Bóveda.
 
-La autenticación es delegada a **Supabase Auth** y cuenta con protecciones duales (Front/Back):
-- **Frontend (`AuthModal.jsx`):** Evalúa fuerza de contraseñas (uso de minúsculas, mayúsculas, números, caracteres especiales y longitud mínima de 8). Evalúa validez del email mediante regex en tiempo real. 
-- **Backend (`server.js`):** El endpoint `/api/auth/register` re-valida estos datos para evitar inyecciones e intercepta los errores específicos de Supabase (ej. `User already registered`) para devolver al cliente mensajes en español claro, evitando caídas de la API.
-- **Manejo de Tokens URL (`App.jsx`):** Al recuperar la contraseña o confirmar un registro mediante Email (Magic Link), Supabase envía los tokens (`access_token` y `refresh_token`) a través de fragmentos de URL (`#`). React captura estos tokens, inicia la sesión decodificando el JWT base64 localmente, e **inmediatamente limpia el historial del navegador (`window.history.replaceState`)** para evitar que los tokens confidenciales permanezcan visibles en la barra de direcciones.
-
----
-
-## 4. Frontend & Diseño (Tailwind v4)
-
-Se utilizan tokens de diseño personalizados definidos en `index.css` a través de utilidades CSS puras compatibles con Tailwind v4. 
-- **Componentes Modulares:** La UI está fragmentada en `Navbar`, `GameCard`, `HeroSection`, `FilterSidebar` y `AuthModal`.
-- **Responsive Design:** La aplicación implementa diseños de rejilla asimétrica en Desktop y **Drawers / Modales móviles** activados por botones en pantallas pequeñas. Todo el texto ha sido auditado para estar en **español neutro**.
-- **Animaciones Custom:** Uso extensivo de micro-interacciones (ej. `animate-bounce-in` para los Toasts flotantes al reclamar un juego) para elevar el sentido de fluidez (60fps).
-
----
-
-## 5. Monetización (Google AdSense)
-
-El proyecto está preparado para la monetización pasiva a través de Google AdSense.
-- **Script Base:** Incrustado en el `<head>` de `index.html`.
-- **Anuncios Modulares (`AdBanner.jsx`):** Un componente de React encapsula las llamadas a `adsbygoogle.push({})` dentro de un `useEffect` vacío `[]`. Esto es indispensable en React para asegurar que el AdSense script se dispare solo una vez cuando el componente se monta en el DOM, previniendo advertencias o bloqueos en consola.
-- Se ha situado estratégicamente debajo del `FilterSidebar` ya que provee excelente retención visual al ser una columna fija (sticky).
+### Frontend (React 19 + Tailwind v4)
+- **i18next:** Internacionalización completa de la UI y contenidos dinámicos.
+- **Optimistic UI:** Los juegos se marcan como "reclamados" instantáneamente en la interfaz antes de que el servidor confirme, mejorando la percepción de velocidad.
+- **Vite:** Herramienta de construcción y HMR (Hot Module Replacement).
 
 ---
 
-## 6. Sincronización Backend - Base de Datos
+## 3. El Motor de Datos: `scraper.js`
+Este script es el corazón de la plataforma. Realiza las siguientes tareas:
+1. **Extracción:** Consulta la API de GamerPower buscando solo juegos completos para PC.
+2. **Traducción Automática:** Utiliza un sistema de mapeo para generar versiones `_en` y `_es` de las descripciones e instrucciones.
+3. **Normalización:** Limpia precios y fechas para asegurar que el feed sea consistente.
+4. **Limpieza:** Elimina de la base de datos local los juegos que ya han expirado en las tiendas oficiales.
 
-- **Supabase Tablas Principales:**
-  - `games`: Almacena meta-información (thumbnail, titulo, enlace, `original_price`, tienda).
-  - `user_games`: Tabla pivote (relacional) que vincula `user_id` de `auth.users` con el `game_id` para almacenar el estado de "reclamado" en la Bóveda del usuario.
+## 4. Internacionalización (i18n)
+La app utiliza un enfoque híbrido para el cambio de idioma:
+- **UI Estática:** Diccionario de llaves en `i18n.js` para botones, menús y errores.
+- **Contenido Dinámico:** El scraper guarda versiones bilingües en la BD. El frontend decide qué columna mostrar (`description_es` o `description_en`) basándose en el estado de `i18n.language`.
+- **Páginas de Texto:** Componentes como `About.jsx` o los posts del blog contienen ambas versiones y renderizan condicionalmente para máxima velocidad.
+
+## 5. Autenticación y Recuperación
+- **Seguridad:** El `AuthModal` valida la complejidad de la contraseña antes de enviarla.
+- **Flujo de Recuperación:** 
+  - El usuario solicita link → Supabase envía email → El link contiene un `#access_token`.
+  - La app detecta el hash, abre el modal en modo `reset` y **limpia la URL** para proteger el token.
+
+## 6. Despliegue y Mantenimiento
+- **Frontend (Netlify):** Configurado con `netlify.toml` para manejar el routing de SPA (evita el error 404 al recargar).
+- **Backend (Render):** Servidor Express que se mantiene "despierto" mediante el uso activo de la plataforma.
+- **Base de Datos (Supabase):** Hosting gestionado con copias de seguridad automáticas.
 
 ## 7. Próximos Pasos (Roadmap)
-- Integración de notificaciones automáticas vía email (Notificar a los usuarios de "Su Bóveda" cuando un juego nuevo esté gratis).
-- Escalabilidad del scraper (`scraper.js`) para capturar precios en distintas monedas y evitar desincronización de tiempos de finalización.
+- [ ] **Notificaciones Push:** Avisar al móvil/navegador cuando Epic Games libere el juego semanal.
+- [ ] **Categorías:** Filtrar por género (RPG, Acción, etc.).
+- [ ] **Social:** Permitir a los usuarios compartir su "Total Ahorrado" en Twitter/Discord.
 
+---
+*Última actualización: Mayo 2026*
