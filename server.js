@@ -309,6 +309,34 @@ app.get("/api/games/free", async (req, res) => {
 });
 
 // ─────────────────────────────────────────────────────────────
+// DEALS: GET /api/deals
+// Devuelve ofertas con descuento mínimo opcional
+// ─────────────────────────────────────────────────────────────
+app.get("/api/deals", async (req, res) => {
+  try {
+    const minDiscount = parseInt(req.query.min) || 80;
+
+    const { data: deals, error } = await supabase
+      .from("deals")
+      .select("*")
+      .gte("discount_pct", minDiscount)
+      .order("discount_pct", { ascending: false })
+      .limit(50);
+
+    if (error) throw new Error(error.message);
+
+    return res.status(200).json({
+      success : true,
+      count   : deals.length,
+      data    : deals,
+    });
+  } catch (err) {
+    console.error("[GET /api/deals]", err.message);
+    return res.status(500).json({ success: false, message: "Error interno." });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────
 // GAME DETAIL: Obtener detalles de un juego específico
 // GET /api/games/:id
 // ─────────────────────────────────────────────────────────────

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Clock } from "lucide-react";
+import { Clock, Gamepad2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
@@ -83,7 +83,9 @@ export default function GameCard({ game, onOptimisticClaim, initialClaimed = fal
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-5xl">🎮</div>
+          <div className="w-full h-full flex items-center justify-center">
+            <Gamepad2 className="w-12 h-12 text-gray-600" />
+          </div>
         )}
         
         {/* Store Badge */}

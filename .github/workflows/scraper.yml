@@ -67,3 +67,10 @@ jobs:
         env:
           SUPABASE_URL:      ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+      # ── PASO 5: Ejecutar Deals Scraper ────────────────────
+      - name: GameFree Deals Scraper
+        run: node deals-scraper.js
+        env:
+          SUPABASE_URL:      ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
