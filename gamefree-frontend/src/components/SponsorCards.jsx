@@ -19,7 +19,7 @@ export default function SponsorCards({ className = "" }) {
           <img 
             src="https://upload.wikimedia.org/wikipedia/commons/4/41/NordVPN_logo.svg" 
             alt="NordVPN" 
-            className="h-4 w-auto"
+            className="h-7 w-auto"
           />
         </div>
 
@@ -54,7 +54,7 @@ export default function SponsorCards({ className = "" }) {
           <img 
             src="https://upload.wikimedia.org/wikipedia/commons/0/0f/NordPass_logo.svg" 
             alt="NordPass" 
-            className="h-4 w-auto"
+            className="h-7 w-auto"
           />
         </div>
 
