@@ -19,6 +19,7 @@ import AhorroTotalBoveda from "./pages/blog/posts/AhorroTotalBoveda";
 import ConsejosSeguridad from "./pages/blog/posts/ConsejosSeguridad";
 import GameDetail from "./pages/GameDetail";
 import DealDetail from "./pages/DealDetail";
+import SponsorCards from "./components/SponsorCards";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -320,6 +321,11 @@ function GameFeedApp() {
             </div>
           )}
           
+          {/* Anuncios en vista móvil */}
+          <div className="md:hidden mb-8">
+            <SponsorCards />
+          </div>
+
           {/* Banner de Ahorro para Mi Bóveda */}
           {tab === "library" && !loading && !error && (
             <div className="mb-8 p-6 rounded-2xl bg-gradient-to-br from-indigo-900/40 to-purple-900/20 border border-indigo-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">

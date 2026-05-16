@@ -23,29 +23,38 @@ const STORES = {
 };
 
 // ── PASO 1: Fetch de CheapShark ───────────────────────────────
-// upperPrice sin límite, lowerPrice 0, sortBy = Savings (mayor ahorro primero)
+// Recorrer 5 páginas para extraer muchísimos más juegos
 async function fetchDeals(minDiscount = 85) {
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
   console.log(`🔥  GameFree Deals Scraper — mínimo ${minDiscount}% descuento`);
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-  const params = new URLSearchParams({
-    sortBy   : "Savings",   // ordena por mayor ahorro primero
-    pageSize : 60,          // máximo permitido por CheapShark
-    onSale   : 1,
-    lowerPrice: 0.50,       // excluye juegos casi gratis permanentes
-  });
+  const MAX_PAGES = 5; // Analizamos las top 300 ofertas (60 * 5)
+  let allDeals = [];
 
-  const response = await fetch(
-    `https://www.cheapshark.com/api/1.0/deals?${params}`
-  );
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const params = new URLSearchParams({
+      sortBy   : "Deal Rating", // Deal Rating encuentra mejores % y juegos de calidad
+      pageSize : 60,
+      pageNumber: page,
+      onSale   : 1,
+      lowerPrice: 0.50,       // excluye juegos casi gratis permanentes
+    });
 
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    const response = await fetch(`https://www.cheapshark.com/api/1.0/deals?${params}`);
+    
+    if (!response.ok) {
+      console.warn(`Página ${page} falló. Saltando...`);
+      continue;
+    }
+
+    const pageDeals = await response.json();
+    if (pageDeals.length === 0) break;
+    
+    allDeals = allDeals.concat(pageDeals);
   }
 
-  const allDeals = await response.json();
-  console.log(`✅  Deals recibidos: ${allDeals.length}`);
+  console.log(`✅  Deals totales escaneados: ${allDeals.length}`);
 
   // ── PASO 2: Filtrar por descuento mínimo ─────────────────────
   const filtered = allDeals.filter((deal) => {
@@ -55,12 +64,12 @@ async function fetchDeals(minDiscount = 85) {
 
     return (
       discount >= minDiscount &&   // descuento mínimo configurable
-      salePrice > 0 &&             // excluye gratuitos (esos van en games)
-      normalPrice > 1              // excluye juegos de $0.99 o menos
+      salePrice > 0 &&             // excluye gratuitos
+      normalPrice > 1              // excluye juegos basura baratos
     );
   });
 
-  console.log(`🎯  Deals con ${minDiscount}%+ de descuento: ${filtered.length}`);
+  console.log(`🎯  Deals finales con ${minDiscount}%+ de descuento: ${filtered.length}`);
   return filtered;
 }
 
