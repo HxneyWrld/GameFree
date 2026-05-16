@@ -225,13 +225,15 @@ function GameFeedApp() {
 
   return (
     <div className="min-h-screen" style={{ background: "#0d1117" }}>
-      {showModal && (
-        <AuthModal 
-          onClose={() => setShowModal(false)} 
-          initialMode={authMode} 
-          resetToken={resetToken} 
-        />
-      )}
+      <AnimatePresence>
+        {showModal && (
+          <AuthModal 
+            onClose={() => setShowModal(false)} 
+            initialMode={authMode} 
+            resetToken={resetToken} 
+          />
+        )}
+      </AnimatePresence>
 
       {/* ── Custom Toast ─────────────────────────────────────────── */}
       {toastMessage && (

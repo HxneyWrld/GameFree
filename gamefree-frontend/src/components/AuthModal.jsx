@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { X } from "lucide-react";
+import { X, Mail, Lock, Gamepad2, ShieldCheck } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { motion } from "framer-motion";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
@@ -168,13 +169,26 @@ export default function AuthModal({ onClose, initialMode = "login", resetToken =
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Overlay */}
-      <div 
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+        className="absolute inset-0 bg-black/80 backdrop-blur-md"
         onClick={onClose}
       />
       
       {/* Modal */}
-      <div className="relative z-10 w-full max-w-md mx-4 bg-[#18181b] border border-[#27272a] rounded-2xl shadow-2xl overflow-hidden">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="relative z-10 w-full max-w-md mx-4 bg-[#0d1117] border border-indigo-500/30 rounded-2xl shadow-[0_0_50px_-12px_rgba(99,102,241,0.3)] overflow-hidden"
+      >
+        {/* Glow Header */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-70"></div>
+
         {/* Close Button */}
         <button
           type="button"
@@ -187,33 +201,35 @@ export default function AuthModal({ onClose, initialMode = "login", resetToken =
 
         {/* Tabs */}
         {activeTab === "login" || activeTab === "register" ? (
-          <div className="flex border-b border-[#27272a]">
+          <div className="flex border-b border-[#30363d] bg-[#161b22]">
             <button
               type="button"
               onClick={() => handleTabChange("login")}
-              className={`flex-1 py-4 text-sm font-medium transition-colors relative ${
+              className={`flex-1 py-4 flex items-center justify-center gap-2 text-sm font-bold transition-colors relative ${
                 activeTab === "login"
-                  ? "text-white"
-                  : "text-[#a1a1aa] hover:text-[#d4d4d8]"
+                  ? "text-indigo-400"
+                  : "text-[#8b949e] hover:text-[#d4d4d8]"
               }`}
             >
+              <Gamepad2 className="w-4 h-4" />
               {t('auth.login')}
               {activeTab === "login" && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" />
+                <motion.span layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.8)]" />
               )}
             </button>
             <button
               type="button"
               onClick={() => handleTabChange("register")}
-              className={`flex-1 py-4 text-sm font-medium transition-colors relative ${
+              className={`flex-1 py-4 flex items-center justify-center gap-2 text-sm font-bold transition-colors relative ${
                 activeTab === "register"
-                  ? "text-white"
-                  : "text-[#a1a1aa] hover:text-[#d4d4d8]"
+                  ? "text-indigo-400"
+                  : "text-[#8b949e] hover:text-[#d4d4d8]"
               }`}
             >
+              <ShieldCheck className="w-4 h-4" />
               {t('auth.register')}
               {activeTab === "register" && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" />
+                <motion.span layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.8)]" />
               )}
             </button>
           </div>
@@ -239,17 +255,20 @@ export default function AuthModal({ onClose, initialMode = "login", resetToken =
               <label htmlFor="email" className="text-sm font-medium leading-none text-[#d4d4d8]">
                 {i18n.language.startsWith('es') ? "Correo electrónico" : "Email address"}
               </label>
-              <input
-                id="email"
-                type="email"
-                placeholder="tu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onBlur={() => handleBlur("email")}
-                className={`flex h-10 w-full rounded-md border bg-[#27272a] px-3 py-2 text-sm text-white placeholder:text-[#71717a] focus:outline-none focus:ring-2 transition-colors ${
-                  fieldErrors.email ? "border-rose-500/50 focus:ring-rose-500/50" : "border-[#3f3f46] focus:ring-[#52525b] focus:border-transparent"
-                }`}
-              />
+              <div className="relative">
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-[#8b949e]" />
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="gamer@ejemplo.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onBlur={() => handleBlur("email")}
+                  className={`flex h-10 w-full rounded-lg border bg-[#161b22] pl-10 pr-3 py-2 text-sm text-white placeholder:text-[#8b949e] focus:outline-none focus:ring-2 transition-all ${
+                    fieldErrors.email ? "border-rose-500/50 focus:ring-rose-500/50" : "border-[#30363d] focus:ring-indigo-500/50 focus:border-indigo-500/50"
+                  }`}
+                />
+              </div>
               {fieldErrors.email && (
                 <p className="text-xs text-rose-500">{fieldErrors.email}</p>
               )}
@@ -263,17 +282,20 @@ export default function AuthModal({ onClose, initialMode = "login", resetToken =
                   ? (i18n.language.startsWith('es') ? "Nueva contraseña" : "New password") 
                   : (i18n.language.startsWith('es') ? "Contraseña" : "Password")}
               </label>
-              <input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onBlur={() => handleBlur("password")}
-                className={`flex h-10 w-full rounded-md border bg-[#27272a] px-3 py-2 text-sm text-white placeholder:text-[#71717a] focus:outline-none focus:ring-2 transition-colors ${
-                  fieldErrors.password ? "border-rose-500/50 focus:ring-rose-500/50" : "border-[#3f3f46] focus:ring-[#52525b] focus:border-transparent"
-                }`}
-              />
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-[#8b949e]" />
+                <input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onBlur={() => handleBlur("password")}
+                  className={`flex h-10 w-full rounded-lg border bg-[#161b22] pl-10 pr-3 py-2 text-sm text-white placeholder:text-[#8b949e] focus:outline-none focus:ring-2 transition-all ${
+                    fieldErrors.password ? "border-rose-500/50 focus:ring-rose-500/50" : "border-[#30363d] focus:ring-indigo-500/50 focus:border-indigo-500/50"
+                  }`}
+                />
+              </div>
               {fieldErrors.password && (
                 <p className="text-xs text-rose-500">{fieldErrors.password}</p>
               )}
@@ -303,17 +325,20 @@ export default function AuthModal({ onClose, initialMode = "login", resetToken =
                   ? (i18n.language.startsWith('es') ? "Confirmar nueva contraseña" : "Confirm new password") 
                   : (i18n.language.startsWith('es') ? "Confirmar contraseña" : "Confirm password")}
               </label>
-              <input
-                id="confirmPassword"
-                type="password"
-                placeholder="••••••••"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                onBlur={() => handleBlur("confirmPassword")}
-                className={`flex h-10 w-full rounded-md border bg-[#27272a] px-3 py-2 text-sm text-white placeholder:text-[#71717a] focus:outline-none focus:ring-2 transition-colors ${
-                  fieldErrors.confirmPassword ? "border-rose-500/50 focus:ring-rose-500/50" : "border-[#3f3f46] focus:ring-[#52525b] focus:border-transparent"
-                }`}
-              />
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-[#8b949e]" />
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  placeholder="••••••••"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onBlur={() => handleBlur("confirmPassword")}
+                  className={`flex h-10 w-full rounded-lg border bg-[#161b22] pl-10 pr-3 py-2 text-sm text-white placeholder:text-[#8b949e] focus:outline-none focus:ring-2 transition-all ${
+                    fieldErrors.confirmPassword ? "border-rose-500/50 focus:ring-rose-500/50" : "border-[#30363d] focus:ring-indigo-500/50 focus:border-indigo-500/50"
+                  }`}
+                />
+              </div>
               {fieldErrors.confirmPassword && (
                 <p className="text-xs text-rose-500">{fieldErrors.confirmPassword}</p>
               )}
@@ -323,7 +348,7 @@ export default function AuthModal({ onClose, initialMode = "login", resetToken =
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 w-full bg-white text-zinc-900 hover:bg-zinc-200 font-medium py-2.5 h-10 mt-2"
+            className="group relative inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 w-full bg-indigo-600 text-white hover:bg-indigo-500 font-bold py-2.5 h-11 mt-4 shadow-[0_0_15px_rgba(99,102,241,0.4)] hover:shadow-[0_0_25px_rgba(99,102,241,0.6)]"
           >
             {loading 
               ? (i18n.language.startsWith('es') ? "Cargando..." : "Loading...") 
