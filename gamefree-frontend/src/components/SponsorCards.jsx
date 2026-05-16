@@ -1,4 +1,4 @@
-import { Check } from "lucide-react";
+import { Check, Shield, Key } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export default function SponsorCards({ className = "" }) {
@@ -14,13 +14,10 @@ export default function SponsorCards({ className = "" }) {
           </span>
         </div>
         
-        {/* Logo/Image area */}
-        <div className="mb-3 flex items-center justify-center bg-white py-1.5 px-3 rounded-lg w-fit">
-          <img 
-            src="https://upload.wikimedia.org/wikipedia/commons/4/41/NordVPN_logo.svg" 
-            alt="NordVPN" 
-            className="h-7 w-auto"
-          />
+        {/* Logo/Image area - 100% Bulletproof usando componentes React */}
+        <div className="mb-3 flex items-center justify-center bg-white py-1.5 px-3 rounded-lg w-fit gap-2">
+          <Shield className="w-5 h-5 text-[#0f172a]" fill="currentColor" />
+          <span className="font-black text-[#0f172a] text-lg tracking-tight">NordVPN</span>
         </div>
 
         <h3 className="text-white font-bold text-sm mb-2 pr-6">
@@ -49,13 +46,10 @@ export default function SponsorCards({ className = "" }) {
           </span>
         </div>
         
-        {/* Logo/Image area */}
-        <div className="mb-3 flex items-center justify-center bg-white py-1.5 px-3 rounded-lg w-fit">
-          <img 
-            src="https://upload.wikimedia.org/wikipedia/commons/0/0f/NordPass_logo.svg" 
-            alt="NordPass" 
-            className="h-7 w-auto"
-          />
+        {/* Logo/Image area - 100% Bulletproof */}
+        <div className="mb-3 flex items-center justify-center bg-white py-1.5 px-3 rounded-lg w-fit gap-2">
+          <Key className="w-5 h-5 text-[#064e3b]" fill="currentColor" />
+          <span className="font-black text-[#064e3b] text-lg tracking-tight">NordPass</span>
         </div>
 
         <h3 className="text-white font-bold text-sm mb-2 pr-6">
