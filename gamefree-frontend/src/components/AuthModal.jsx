@@ -379,7 +379,7 @@ export default function AuthModal({ onClose, initialMode = "login", resetToken =
             </p>
           )}
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 }
