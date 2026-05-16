@@ -8,12 +8,12 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get('library')
-  async getLibrary(@Request() req) {
+  async getLibrary(@Request() req: any) {
     return this.userService.getLibrary(req.user.id);
   }
 
   @Get('favorites')
-  async getFavorites(@Request() req) {
+  async getFavorites(@Request() req: any) {
     return this.userService.getFavorites(req.user.id);
   }
 }

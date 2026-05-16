@@ -8,8 +8,8 @@ export class SupabaseService {
   private readonly supabaseAnonKey: string;
 
   constructor(private configService: ConfigService) {
-    this.supabaseUrl = this.configService.get<string>('SUPABASE_URL');
-    this.supabaseAnonKey = this.configService.get<string>('SUPABASE_ANON_KEY');
+    this.supabaseUrl = this.configService.get<string>('SUPABASE_URL') || '';
+    this.supabaseAnonKey = this.configService.get<string>('SUPABASE_ANON_KEY') || '';
 
     if (!this.supabaseUrl || !this.supabaseAnonKey) {
       throw new Error('Supabase variables are missing!');

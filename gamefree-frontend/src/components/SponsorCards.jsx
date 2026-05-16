@@ -15,11 +15,11 @@ export default function SponsorCards({ className = "" }) {
         </div>
         
         {/* Logo/Image area */}
-        <div className="mb-3 flex items-center justify-between">
+        <div className="mb-3 flex items-center justify-center bg-white py-1.5 px-3 rounded-lg w-fit">
           <img 
-            src="https://s1.nordcdn.com/nordvpn/media/1.229.0/images/global/logos/logo-horizontal-white.svg" 
+            src="https://upload.wikimedia.org/wikipedia/commons/4/41/NordVPN_logo.svg" 
             alt="NordVPN" 
-            className="h-6 w-auto"
+            className="h-4 w-auto"
           />
         </div>
 
@@ -50,11 +50,11 @@ export default function SponsorCards({ className = "" }) {
         </div>
         
         {/* Logo/Image area */}
-        <div className="mb-3 flex items-center justify-between">
+        <div className="mb-3 flex items-center justify-center bg-white py-1.5 px-3 rounded-lg w-fit">
           <img 
-            src="https://s1.nordcdn.com/nordpass/media/1.127.0/images/global/logos/nordpass-logo-white.svg" 
+            src="https://upload.wikimedia.org/wikipedia/commons/0/0f/NordPass_logo.svg" 
             alt="NordPass" 
-            className="h-6 w-auto"
+            className="h-4 w-auto"
           />
         </div>
 
