@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Param, Headers, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Headers, Request, UseGuards, Query } from '@nestjs/common';
 import { GamesService } from './games.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
@@ -9,6 +9,11 @@ export class GamesController {
   @Get('free')
   async getFreeGames(@Headers('authorization') authHeader?: string) {
     return this.gamesService.getFreeGames(authHeader);
+  }
+
+  @Get('deals')
+  async getDeals(@Query('min') min?: string) {
+    return this.gamesService.getDeals(min ? parseInt(min, 10) : 85);
   }
 
   @Get(':id')

@@ -321,7 +321,7 @@ app.get("/api/deals", async (req, res) => {
       .select("*")
       .gte("discount_pct", minDiscount)
       .order("discount_pct", { ascending: false })
-      .limit(50);
+      .limit(300);
 
     if (error) throw new Error(error.message);
 

@@ -42,6 +42,24 @@ export class GamesService {
     }
   }
 
+  async getDeals(minDiscount: number) {
+    try {
+      const db = this.supabaseService.getClient();
+      const { data: deals, error } = await db
+        .from('deals')
+        .select('*')
+        .gte('discount_pct', minDiscount)
+        .order('discount_pct', { ascending: false })
+        .limit(300);
+
+      if (error) throw new Error(error.message);
+
+      return { success: true, count: deals.length, data: deals };
+    } catch (err) {
+      throw new InternalServerErrorException('Error interno.');
+    }
+  }
+
   async getGameDetails(id: string) {
     try {
       const db = this.supabaseService.getClient();
