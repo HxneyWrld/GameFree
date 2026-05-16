@@ -18,25 +18,25 @@ export class GamesController {
 
   @UseGuards(JwtAuthGuard)
   @Post(':id/claim')
-  async claimGame(@Param('id') id: string, @Request() req) {
+  async claimGame(@Param('id') id: string, @Request() req: any) {
     return this.gamesService.claimGame(id, req.user.id, req.token);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id/claim')
-  async unclaimGame(@Param('id') id: string, @Request() req) {
+  async unclaimGame(@Param('id') id: string, @Request() req: any) {
     return this.gamesService.unclaimGame(id, req.user.id, req.token);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post(':id/favorite')
-  async favoriteGame(@Param('id') id: string, @Request() req) {
+  async favoriteGame(@Param('id') id: string, @Request() req: any) {
     return this.gamesService.favoriteGame(id, req.user.id, req.token);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id/favorite')
-  async unfavoriteGame(@Param('id') id: string, @Request() req) {
+  async unfavoriteGame(@Param('id') id: string, @Request() req: any) {
     return this.gamesService.unfavoriteGame(id, req.user.id, req.token);
   }
 }

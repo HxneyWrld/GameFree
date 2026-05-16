@@ -48,6 +48,10 @@ export class AuthService {
       throw new ConflictException("Este correo ya tiene una cuenta registrada.");
     }
 
+    if (!data.user) {
+      throw new BadRequestException("Error al crear la cuenta.");
+    }
+
     return {
       success: true,
       message: "Cuenta creada. Revisa tu correo para confirmarla.",
