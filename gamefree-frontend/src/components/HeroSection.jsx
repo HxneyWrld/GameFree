@@ -1,30 +1,44 @@
+import { useState, useEffect } from "react";
 import { Gamepad2, Flame, Zap } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { motion, AnimatePresence } from "framer-motion";
+
+const IMAGES = [
+  "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=2070&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?q=80&w=2070&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1605901309584-818e25960b8f?q=80&w=2019&auto=format&fit=crop"
+];
 
 export default function HeroSection({ onExplore }) {
   const { t, i18n } = useTranslation();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % IMAGES.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0d1117]">
-      {/* Background grid pattern */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(139, 92, 246, 0.3) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(139, 92, 246, 0.3) 1px, transparent 1px)
-          `,
-          backgroundSize: "60px 60px",
-        }}
-      />
-
-      {/* Radial gradient overlay */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(139, 92, 246, 0.12) 0%, transparent 50%)",
-        }}
-      />
+      {/* Background Carousel */}
+      <div className="absolute inset-0 z-0">
+        <AnimatePresence mode="popLayout">
+          <motion.img
+            key={currentImageIndex}
+            src={IMAGES[currentImageIndex]}
+            alt="Gaming background"
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 0.25, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        </AnimatePresence>
+        {/* Gradient Overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0d1117] via-[#0d1117]/85 to-[#0d1117]/60" />
+      </div>
 
       {/* Floating gaming icons - decorative */}
       <div className="absolute top-24 left-[5%] md:left-[15%] animate-pulse opacity-10 md:opacity-20">
@@ -55,18 +69,33 @@ export default function HeroSection({ onExplore }) {
         </div>
 
         {/* Main title */}
-        <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-white mb-6">
+        <motion.h1 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-white mb-6"
+        >
           <span className="block text-balance">{i18n.language.startsWith('es') ? 'No pagues' : 'Stop paying'}</span>
           <span className="block text-indigo-500">{i18n.language.startsWith('es') ? 'por jugar.' : 'to play.'}</span>
-        </h1>
+        </motion.h1>
 
         {/* Subtitle */}
-        <p className="max-w-2xl mx-auto text-lg sm:text-xl text-gray-400 mb-10 leading-relaxed text-pretty">
+        <motion.p 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          className="max-w-2xl mx-auto text-lg sm:text-xl text-gray-400 mb-10 leading-relaxed text-pretty"
+        >
           {t('hero.subtitle')}
-        </p>
+        </motion.p>
 
         {/* CTA Button */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-4"
+        >
           <button
             onClick={onExplore}
             className="group relative overflow-hidden bg-indigo-600 text-white hover:bg-indigo-500 text-lg px-8 py-4 rounded-xl font-semibold shadow-lg shadow-indigo-600/25 transition-all hover:shadow-xl hover:shadow-indigo-600/40 hover:scale-105 cursor-pointer"
@@ -88,7 +117,7 @@ export default function HeroSection({ onExplore }) {
               </svg>
             </span>
           </button>
-        </div>
+        </motion.div>
 
         {/* Platform logos */}
         <div className="mt-16 flex flex-col items-center gap-4">

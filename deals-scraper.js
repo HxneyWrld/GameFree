@@ -24,7 +24,7 @@ const STORES = {
 
 // ── PASO 1: Fetch de CheapShark ───────────────────────────────
 // upperPrice sin límite, lowerPrice 0, sortBy = Savings (mayor ahorro primero)
-async function fetchDeals(minDiscount = 80) {
+async function fetchDeals(minDiscount = 85) {
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
   console.log(`🔥  GameFree Deals Scraper — mínimo ${minDiscount}% descuento`);
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
@@ -127,7 +127,7 @@ async function removeOldDeals() {
 // ── MAIN ──────────────────────────────────────────────────────
 async function main() {
   try {
-    const deals = await fetchDeals(80); // Cambiar umbral aquí (80 = 80%+)
+    const deals = await fetchDeals(85); // Cambiar umbral aquí (85 = 85%+)
 
     const byStore = deals.reduce((acc, d) => {
       const store = STORES[d.storeID] ?? `Tienda ${d.storeID}`;

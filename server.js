@@ -314,7 +314,7 @@ app.get("/api/games/free", async (req, res) => {
 // ─────────────────────────────────────────────────────────────
 app.get("/api/deals", async (req, res) => {
   try {
-    const minDiscount = parseInt(req.query.min) || 80;
+    const minDiscount = parseInt(req.query.min) || 85;
 
     const { data: deals, error } = await supabase
       .from("deals")

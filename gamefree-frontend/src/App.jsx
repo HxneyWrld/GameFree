@@ -20,6 +20,7 @@ import ConsejosSeguridad from "./pages/blog/posts/ConsejosSeguridad";
 import GameDetail from "./pages/GameDetail";
 import DealDetail from "./pages/DealDetail";
 import { useTranslation } from "react-i18next";
+import { motion, AnimatePresence } from "framer-motion";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
@@ -418,21 +419,33 @@ function GameFeedApp() {
 
           {/* Grid de juegos */}
           {!loading && !error && sortedGames.length > 0 && (
-            <ul className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 list-none p-0">
-              {sortedGames.map((game) => (
-                <li key={game.id}>
-                  {tab === "deals" ? (
-                    <DealCard game={game} />
-                  ) : (
-                    <GameCard
-                      game={game}
-                      onOptimisticClaim={handleOptimisticClaim}
-                      initialClaimed={claimedIds.has(game.id)}
-                    />
-                  )}
-                </li>
-              ))}
-            </ul>
+            <motion.ul 
+              layout
+              className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 list-none p-0"
+            >
+              <AnimatePresence mode="popLayout">
+                {sortedGames.map((game, index) => (
+                  <motion.li 
+                    key={game.id}
+                    layout
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.4, delay: (index % 15) * 0.05 }}
+                  >
+                    {tab === "deals" ? (
+                      <DealCard game={game} />
+                    ) : (
+                      <GameCard
+                        game={game}
+                        onOptimisticClaim={handleOptimisticClaim}
+                        initialClaimed={claimedIds.has(game.id)}
+                      />
+                    )}
+                  </motion.li>
+                ))}
+              </AnimatePresence>
+            </motion.ul>
           )}
 
           <footer className="mt-12 text-center text-xs text-[#8b949e] border-t border-[#30363d] pt-8 pb-4">
