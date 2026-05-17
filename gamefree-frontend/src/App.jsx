@@ -75,7 +75,7 @@ function GameFeedApp() {
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
     const endpoints = {
       feed:      "/api/games/free",
-      deals:     "/api/deals",
+      deals:     "/api/games/deals",
       library:   "/api/user/library",
     };
     try {
@@ -118,6 +118,18 @@ function GameFeedApp() {
   useEffect(() => {
     if (!isLoggedIn && tab === "library") setTab("feed");
   }, [isLoggedIn]);
+
+  useEffect(() => {
+    if (!loading && games.length > 0) {
+      const savedScroll = sessionStorage.getItem("gamefree_scroll_pos");
+      if (savedScroll) {
+        setTimeout(() => {
+          window.scrollTo({ top: parseInt(savedScroll, 10), behavior: "instant" });
+          sessionStorage.removeItem("gamefree_scroll_pos");
+        }, 100);
+      }
+    }
+  }, [loading, games.length]);
 
   const handleOpenAuth = () => {
     setAuthMode("login");

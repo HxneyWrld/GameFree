@@ -59,6 +59,7 @@ export default function GameCard({ game, onOptimisticClaim, initialClaimed = fal
   }, [game.expiration_date]);
 
   function handleClaimClick(e) {
+    sessionStorage.setItem("gamefree_scroll_pos", window.scrollY.toString());
     if (claimed || !isLoggedIn) return;
 
     setClaimed(true);

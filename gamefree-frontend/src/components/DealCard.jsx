@@ -18,6 +18,7 @@ export default function DealCard({ game }) {
   return (
     <Link
       to={`/deal/${game.id}`}
+      onClick={() => sessionStorage.setItem("gamefree_scroll_pos", window.scrollY.toString())}
       className="block group relative flex flex-col h-full overflow-hidden rounded-xl bg-[#161b22] border border-[#30363d] transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-black/50 hover:border-rose-500/50 cursor-pointer"
     >
       <div className="relative aspect-[16/9] overflow-hidden bg-[#0d1117]">
