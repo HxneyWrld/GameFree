@@ -16,6 +16,11 @@ export class GamesController {
     return this.gamesService.getDeals(min ? parseInt(min, 10) : 85);
   }
 
+  @Get('deals/:id')
+  async getDealDetails(@Param('id') id: string) {
+    return this.gamesService.getDealDetails(id);
+  }
+
   @Get(':id')
   async getGameDetails(@Param('id') id: string) {
     return this.gamesService.getGameDetails(id);

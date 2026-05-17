@@ -13,7 +13,7 @@ export default function DealDetail() {
   useEffect(() => {
     async function fetchDeal() {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/deals/${id}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/games/deals/${id}`);
         const result = await res.json();
         if (result.success) {
           setDeal(result.data);

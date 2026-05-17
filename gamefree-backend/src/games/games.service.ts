@@ -60,6 +60,26 @@ export class GamesService {
     }
   }
 
+  async getDealDetails(id: string) {
+    try {
+      const db = this.supabaseService.getClient();
+      const { data, error } = await db
+        .from('deals')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) {
+        throw new NotFoundException('Oferta no encontrada.');
+      }
+
+      return { success: true, data };
+    } catch (err) {
+      if (err instanceof NotFoundException) throw err;
+      throw new InternalServerErrorException('Error interno.');
+    }
+  }
+
   async getGameDetails(id: string) {
     try {
       const db = this.supabaseService.getClient();
