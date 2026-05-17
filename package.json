@@ -4,6 +4,8 @@
   "description": "",
   "main": "scraper.js",
   "scripts": {
+    "build": "cd gamefree-backend && npm install && npm run build",
+    "start": "cd gamefree-backend && npm run start:prod",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
