@@ -312,7 +312,7 @@ app.get("/api/games/free", async (req, res) => {
 // DEALS: GET /api/deals
 // Devuelve ofertas con descuento mínimo opcional
 // ─────────────────────────────────────────────────────────────
-app.get("/api/deals", async (req, res) => {
+app.get(["/api/deals", "/api/games/deals"], async (req, res) => {
   try {
     const minDiscount = parseInt(req.query.min) || 85;
 
@@ -340,7 +340,7 @@ app.get("/api/deals", async (req, res) => {
 // DEALS DETAIL: Obtener detalles de una oferta específica
 // GET /api/deals/:id
 // ─────────────────────────────────────────────────────────────
-app.get("/api/deals/:id", async (req, res) => {
+app.get(["/api/deals/:id", "/api/games/deals/:id"], async (req, res) => {
   const { id } = req.params;
   try {
     const { data, error } = await supabase
